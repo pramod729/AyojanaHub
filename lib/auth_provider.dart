@@ -11,7 +11,6 @@ class AuthProvider with ChangeNotifier {
   User? _user;
   UserModel? _userModel;
   bool _isLoading = false;
-  String? _resetPasswordEmail;
 
   User? get user => _user;
   UserModel? get userModel => _userModel;
@@ -218,7 +217,6 @@ class AuthProvider with ChangeNotifier {
 
       await _auth.sendPasswordResetEmail(email: email.trim());
 
-      _resetPasswordEmail = email.trim();
       _isLoading = false;
       notifyListeners();
       return null;
@@ -238,7 +236,6 @@ class AuthProvider with ChangeNotifier {
     try {
       await _auth.signOut();
       _userModel = null;
-      _resetPasswordEmail = null;
       notifyListeners();
     } catch (e) {
       debugPrint('Logout error: $e');
@@ -329,7 +326,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   bool _isValidPhone(String phone) {
-    final phoneRegex = RegExp(r'^[0-9]{10,}$');
-    return phoneRegex.hasMatch(phone.replaceAll(RegExp(r'[^\d]'), ''));
+    // Remove all non-digit characters and check if at least 10 digits remain
+    final digitsOnly = phone.replaceAll(RegExp(r'[^\d]'), '');
+    return digitsOnly.length >= 10;
   }
 }
