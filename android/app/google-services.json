@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "195886261942",
+    "project_id": "ayojana-hub",
+    "storage_bucket": "ayojana-hub.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:195886261942:android:e238e141c192bc6b892817",
+        "android_client_info": {
+          "package_name": "com.example.ayojanahub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNsT247gr92P71P8TVUxUkJovaUHSG09o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
