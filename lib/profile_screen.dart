@@ -118,7 +118,7 @@ class ProfileScreen extends StatelessWidget {
             _ProfileOption(icon: Icons.notifications_outlined, title: 'Notifications', subtitle: 'Manage notification settings', onTap: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notifications coming soon!')))),
             _ProfileOption(icon: Icons.help_outline, title: 'Help & Support', subtitle: 'Get help with your account', onTap: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Support coming soon!')))),
             _ProfileOption(icon: Icons.info_outline, title: 'About', subtitle: 'Learn more about Ayojana Hub', onTap: () => showAboutDialog(context: context, applicationName: 'Ayojana Hub', applicationVersion: '1.0.0', applicationLegalese: '© 2025 Ayojana Hub', children: [const Text('Event Management System')])),
-            if (user.role == 'admin') _ProfileOption(icon: Icons.analytics_outlined, title: 'Admin Analytics', subtitle: 'View vendor signups, bookings, revenue', onTap: () => Navigator.pushNamed(context, '/admin-analytics')),
+            if (user.role == 'admin') _ProfileOption(icon: Icons.admin_panel_settings, title: 'Admin Dashboard', subtitle: 'Manage users, vendors, bookings & events', onTap: () => Navigator.pushNamed(context, '/admin-analytics')),
             const SizedBox(height: 16),
             Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: SizedBox(width: double.infinity, child: ElevatedButton(onPressed: () => Navigator.pushNamed(context, '/vendors'), style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)), child: const Text('Find Vendors')))),
             const SizedBox(height: 12),

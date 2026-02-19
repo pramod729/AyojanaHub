@@ -3,6 +3,7 @@ import 'package:ayojana_hub/booking_model.dart';
 import 'package:ayojana_hub/booking_provider.dart';
 import 'package:ayojana_hub/vendor_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:ayojana_hub/theme/app_colors.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -105,21 +106,21 @@ class _VendorBookingsScreenState extends State<VendorBookingsScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.error_outline, size: 48, color: Color(0xFFEF4444)),
+                          Icon(Icons.error_outline, size: 48, color: AppColors.error),
                           const SizedBox(height: 12),
                           Text(
                             bookingProvider.error!,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontSize: 16,
-                              color: Color(0xFF1F2937),
+                              color: Colors.white,
                             ),
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: _loadBookings,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF10B981),
+                              backgroundColor: AppColors.success,
                             ),
                             child: const Text('Try Again'),
                           ),
@@ -139,7 +140,7 @@ class _VendorBookingsScreenState extends State<VendorBookingsScreen> {
                         Icon(
                           Icons.event_busy,
                           size: 80,
-                          color: Colors.grey[400],
+                          color: AppColors.textSecondary,
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -149,7 +150,7 @@ class _VendorBookingsScreenState extends State<VendorBookingsScreen> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey[700],
+                            color: AppColors.textLight,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -157,7 +158,7 @@ class _VendorBookingsScreenState extends State<VendorBookingsScreen> {
                           'Bookings from customers will appear here',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey[500],
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -206,13 +207,13 @@ class _FilterChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF6C63FF) : Colors.grey[200],
+          color: isSelected ? AppColors.gold : AppColors.card.withOpacity(0.12),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey[700],
+            color: isSelected ? Colors.black : AppColors.textSecondary,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
@@ -233,15 +234,15 @@ class _VendorBookingCard extends StatelessWidget {
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'pending':
-        return Colors.orange;
+        return AppColors.softYellow;
       case 'confirmed':
-        return Colors.green;
+        return AppColors.success;
       case 'cancelled':
-        return Colors.red;
+        return AppColors.error;
       case 'completed':
-        return Colors.blue;
+        return AppColors.gold;
       default:
-        return Colors.grey;
+        return AppColors.textSecondary;
     }
   }
 
@@ -348,9 +349,10 @@ class _VendorBookingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  color: AppColors.card,
+  margin: const EdgeInsets.only(bottom: 16),
+  elevation: 2,
+  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () => _showBookingActions(context),
         borderRadius: BorderRadius.circular(12),
@@ -368,15 +370,15 @@ class _VendorBookingCard extends StatelessWidget {
                         Text(
                           booking.customerName,
                           style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           booking.eventName,
                           style: TextStyle(
-                            color: Colors.grey[600],
+                            color: AppColors.textSecondary,
                             fontSize: 14,
                           ),
                         ),
@@ -389,7 +391,7 @@ class _VendorBookingCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(booking.status).withOpacity(0.1),
+                      color: _getStatusColor(booking.status).withOpacity(0.12),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -414,7 +416,7 @@ class _VendorBookingCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const Divider(height: 24),
+              Divider(height: 24, color: AppColors.border),
               _InfoRow(
                 icon: Icons.business_center,
                 label: booking.vendorCategory,
@@ -430,14 +432,14 @@ class _VendorBookingCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.attach_money, size: 20, color: Colors.grey[600]),
+                      Icon(Icons.attach_money, size: 20, color: AppColors.textSecondary),
                       const SizedBox(width: 8),
                       Text(
                         'NPR ${booking.price.toStringAsFixed(0)}',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
-                          color: Color(0xFF6C63FF),
+                          color: AppColors.gold,
                         ),
                       ),
                     ],
@@ -449,7 +451,7 @@ class _VendorBookingCard extends StatelessWidget {
                       icon: const Icon(Icons.edit, size: 16),
                       label: const Text('Manage'),
                       style: TextButton.styleFrom(
-                        foregroundColor: const Color(0xFF6C63FF),
+                        foregroundColor: AppColors.gold,
                       ),
                     ),
                 ],
@@ -475,11 +477,11 @@ class _InfoRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: Colors.grey[600]),
+        Icon(icon, size: 18, color: AppColors.textSecondary),
         const SizedBox(width: 8),
         Text(
           label,
-          style: TextStyle(color: Colors.grey[700]),
+          style: TextStyle(color: AppColors.textLight),
         ),
       ],
     );
@@ -507,9 +509,9 @@ class _ActionButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withOpacity(0.12),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withOpacity(0.25)),
         ),
         child: Row(
           children: [

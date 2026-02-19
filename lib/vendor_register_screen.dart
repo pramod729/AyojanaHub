@@ -12,6 +12,8 @@ class VendorRegisterScreen extends StatefulWidget {
 
 class _VendorRegisterScreenState extends State<VendorRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  
+  // Text controllers
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -21,11 +23,14 @@ class _VendorRegisterScreenState extends State<VendorRegisterScreen> {
   final _locationController = TextEditingController();
   final _descriptionController = TextEditingController();
 
+  // Form state
   String _selectedCategory = 'Catering';
   final List<String> _selectedServices = [];
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _agreedToTerms = false;
+  bool _isLoading = false;
+  String _passwordStrength = '';
 
   final List<String> _categories = [
     'Catering',
@@ -83,6 +88,12 @@ class _VendorRegisterScreenState extends State<VendorRegisterScreen> {
   };
 
   @override
+  void initState() {
+    super.initState();
+    _passwordController.addListener(_updatePasswordStrength);
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
@@ -95,95 +106,169 @@ class _VendorRegisterScreenState extends State<VendorRegisterScreen> {
     super.dispose();
   }
 
+  // Calculate password strength
+  void _updatePasswordStrength() {
+    final password = _passwordController.text;
+    setState(() {
+      if (password.isEmpty) {
+        _passwordStrength = '';
+      } else if (password.length < 8) {
+        _passwordStrength = 'weak';
+      } else if (password.length < 12) {
+        _passwordStrength = 'medium';
+      } else {
+        _passwordStrength = 'strong';
+      }
+    });
+  }
+
+  // Get password strength color
+  Color _getPasswordStrengthColor() {
+    switch (_passwordStrength) {
+      case 'weak':
+        return Colors.red;
+      case 'medium':
+        return Colors.orange;
+      case 'strong':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  // Get password strength text
+  String _getPasswordStrengthText() {
+    switch (_passwordStrength) {
+      case 'weak':
+        return 'Weak password';
+      case 'medium':
+        return 'Good password';
+      case 'strong':
+        return 'Strong password';
+      default:
+        return '';
+    }
+  }
+
+  // Validate email format
+  bool _isValidEmail(String email) {
+    const emailPattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+    return RegExp(emailPattern).hasMatch(email);
+  }
+
+  // Validate phone number (10 digits for Indian numbers)
+  bool _isValidPhone(String phone) {
+    const phonePattern = r'^[0-9]{10}$';
+    return RegExp(phonePattern).hasMatch(phone.replaceAll(RegExp(r'\D'), ''));
+  }
+
   Future<void> _registerVendor() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all required fields correctly')),
+      );
+      return;
+    }
 
     if (_passwordController.text != _confirmPasswordController.text) {
-      _showErrorDialog('Passwords do not match');
+      _showErrorDialog('Password mismatch', 'Passwords do not match. Please check and try again.');
       return;
     }
 
     if (_selectedServices.isEmpty) {
-      _showErrorDialog('Please select at least one service');
+      _showErrorDialog('No services selected', 'Please select at least one service');
       return;
     }
 
     if (!_agreedToTerms) {
-      _showErrorDialog('Please agree to the Terms and Conditions');
+      _showErrorDialog('Terms not agreed', 'Please agree to the Terms and Conditions');
       return;
     }
 
     FocusScope.of(context).unfocus();
+    
+    setState(() => _isLoading = true);
 
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final vendorProvider = Provider.of<VendorProvider>(context, listen: false);
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final vendorProvider = Provider.of<VendorProvider>(context, listen: false);
 
-    // First, register the user account with vendor role
-    final registerError = await authProvider.register(
-      name: _nameController.text.trim(),
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-      phone: _phoneController.text.trim(),
-      role: 'vendor',
-    );
+      // First, register the user account with vendor role
+      final registerError = await authProvider.register(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        phone: _phoneController.text.trim(),
+        role: 'vendor',
+      );
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    if (registerError != null) {
-      _showErrorDialog(registerError);
-      return;
-    }
+      if (registerError != null) {
+        _showErrorDialog('Registration failed', registerError);
+        setState(() => _isLoading = false);
+        return;
+      }
 
-    // Then update vendor profile in users collection
-    final vendorProfileError = await authProvider.updateVendorProfile(
-      businessName: _businessNameController.text.trim(),
-      category: _selectedCategory,
-      description: _descriptionController.text.trim(),
-      location: _locationController.text.trim(),
-      services: _selectedServices,
-    );
-
-    if (!mounted) return;
-
-    if (vendorProfileError != null) {
-      _showErrorDialog(vendorProfileError);
-      return;
-    }
-
-    // Finally, create vendor document in vendors collection
-    final userId = authProvider.user?.uid;
-    if (userId != null) {
-      final vendorCreationError = await vendorProvider.createVendorFromRegistration(
-        userId: userId,
+      // Then update vendor profile in users collection
+      final vendorProfileError = await authProvider.updateVendorProfile(
         businessName: _businessNameController.text.trim(),
         category: _selectedCategory,
         description: _descriptionController.text.trim(),
-        phone: _phoneController.text.trim(),
-        email: _emailController.text.trim(),
         location: _locationController.text.trim(),
         services: _selectedServices,
       );
 
       if (!mounted) return;
 
-      if (vendorCreationError != null) {
-        _showErrorDialog(vendorCreationError);
+      if (vendorProfileError != null) {
+        _showErrorDialog('Profile update failed', vendorProfileError);
+        setState(() => _isLoading = false);
         return;
       }
-    }
 
-    _showSuccessDialog();
+      // Finally, create vendor document in vendors collection
+      final userId = authProvider.user?.uid;
+      if (userId != null) {
+        final vendorCreationError = await vendorProvider.createVendorFromRegistration(
+          userId: userId,
+          businessName: _businessNameController.text.trim(),
+          category: _selectedCategory,
+          description: _descriptionController.text.trim(),
+          phone: _phoneController.text.trim(),
+          email: _emailController.text.trim(),
+          location: _locationController.text.trim(),
+          services: _selectedServices,
+        );
+
+        if (!mounted) return;
+
+        if (vendorCreationError != null) {
+          _showErrorDialog('Vendor creation failed', vendorCreationError);
+          setState(() => _isLoading = false);
+          return;
+        }
+      }
+
+      if (!mounted) return;
+      _showSuccessDialog();
+    } catch (e) {
+      if (mounted) {
+        _showErrorDialog('Error', 'An unexpected error occurred. Please try again.');
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
-  void _showErrorDialog(String message) {
+  void _showErrorDialog(String title, String message) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.error_outline, color: Colors.red),
-            SizedBox(width: 8),
-            Text('Registration Failed'),
+            const Icon(Icons.error_outline, color: Colors.red),
+            const SizedBox(width: 8),
+            Expanded(child: Text(title)),
           ],
         ),
         content: Text(message),
@@ -206,11 +291,11 @@ class _VendorRegisterScreenState extends State<VendorRegisterScreen> {
           children: [
             Icon(Icons.check_circle, color: Colors.green),
             SizedBox(width: 8),
-            Text('Vendor Registration Successful!'),
+            Expanded(child: Text('Registration Successful!')),
           ],
         ),
         content: const Text(
-          'Your vendor account has been created successfully. You can now log in and manage your business.',
+          'Your vendor account has been created successfully. You can now log in with your credentials and manage your business profile.',
         ),
         actions: [
           TextButton(
@@ -233,315 +318,60 @@ class _VendorRegisterScreenState extends State<VendorRegisterScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Register as Vendor'),
-        centerTitle: true,
+        centerTitle: false,
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Personal Information',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              // Personal Information Section
+              _buildSectionHeader('Personal Information'),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: 'Full Name',
-                  hintText: 'Enter your full name',
-                  prefixIcon: const Icon(Icons.person),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your name';
-                  }
-                  if ((value?.trim().split(' ') ?? []).length < 2) {
-                    return 'Please enter your full name';
-                  }
-                  return null;
-                },
-              ),
+              _buildNameField(),
               const SizedBox(height: 12),
-              TextFormField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: 'Email Address',
-                  hintText: 'Enter your email',
-                  prefixIcon: const Icon(Icons.email),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your email';
-                  }
-                  if (!value!.contains('@')) {
-                    return 'Please enter a valid email';
-                  }
-                  return null;
-                },
-              ),
+              _buildEmailField(),
               const SizedBox(height: 12),
-              TextFormField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  labelText: 'Phone Number',
-                  hintText: 'Enter your phone number',
-                  prefixIcon: const Icon(Icons.phone),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your phone number';
-                  }
-                  return null;
-                },
-              ),
+              _buildPhoneField(),
               const SizedBox(height: 12),
-              TextFormField(
-                controller: _passwordController,
-                obscureText: _obscurePassword,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  hintText: 'Enter a strong password',
-                  prefixIcon: const Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                    ),
-                    onPressed: () {
-                      setState(
-                        () => _obscurePassword = !_obscurePassword,
-                      );
-                    },
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter a password';
-                  }
-                  if ((value?.length ?? 0) < 8) {
-                    return 'Password must be at least 8 characters';
-                  }
-                  return null;
-                },
-              ),
+              _buildPasswordField(),
+              const SizedBox(height: 8),
+              _buildPasswordStrengthIndicator(),
               const SizedBox(height: 12),
-              TextFormField(
-                controller: _confirmPasswordController,
-                obscureText: _obscureConfirmPassword,
-                decoration: InputDecoration(
-                  labelText: 'Confirm Password',
-                  hintText: 'Confirm your password',
-                  prefixIcon: const Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureConfirmPassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                    ),
-                    onPressed: () {
-                      setState(
-                        () => _obscureConfirmPassword =
-                            !_obscureConfirmPassword,
-                      );
-                    },
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please confirm your password';
-                  }
-                  return null;
-                },
-              ),
+              _buildConfirmPasswordField(),
               const SizedBox(height: 24),
-              const Text(
-                'Business Information',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              
+              // Business Information Section
+              _buildSectionHeader('Business Information'),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _businessNameController,
-                decoration: InputDecoration(
-                  labelText: 'Business Name',
-                  hintText: 'Enter your business name',
-                  prefixIcon: const Icon(Icons.business),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your business name';
-                  }
-                  return null;
-                },
-              ),
+              _buildBusinessNameField(),
               const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                value: _selectedCategory,
-                decoration: InputDecoration(
-                  labelText: 'Business Category',
-                  prefixIcon: const Icon(Icons.category),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                items: _categories.map((category) {
-                  return DropdownMenuItem(
-                    value: category,
-                    child: Text(category),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() {
-                      _selectedCategory = value;
-                      _selectedServices.clear();
-                    });
-                  }
-                },
-              ),
+              _buildCategoryDropdown(),
               const SizedBox(height: 12),
-              TextFormField(
-                controller: _locationController,
-                decoration: InputDecoration(
-                  labelText: 'Location',
-                  hintText: 'Enter your business location',
-                  prefixIcon: const Icon(Icons.location_on),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your location';
-                  }
-                  return null;
-                },
-              ),
+              _buildLocationField(),
               const SizedBox(height: 12),
-              TextFormField(
-                controller: _descriptionController,
-                maxLines: 4,
-                decoration: InputDecoration(
-                  labelText: 'Business Description',
-                  hintText: 'Describe your business and services',
-                  prefixIcon: const Icon(Icons.description),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter a business description';
-                  }
-                  return null;
-                },
-              ),
+              _buildDescriptionField(),
               const SizedBox(height: 16),
-              const Text(
-                'Services Offered',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              
+              // Services Section
+              _buildSectionHeader('Services Offered'),
               const SizedBox(height: 12),
-              ...(_servicesByCategory[_selectedCategory] ?? []).map(
-                (service) => CheckboxListTile(
-                  key: ValueKey(service),
-                  title: Text(service),
-                  value: _selectedServices.contains(service),
-                  onChanged: (selected) {
-                    setState(() {
-                      if (selected ?? false) {
-                        if (!_selectedServices.contains(service)) {
-                          _selectedServices.add(service);
-                        }
-                      } else {
-                        _selectedServices.remove(service);
-                      }
-                    });
-                  },
-                ),
-              ),
+              _buildServicesCheckboxes(),
               const SizedBox(height: 16),
-              CheckboxListTile(
-                title: const Text('I agree to Terms and Conditions'),
-                value: _agreedToTerms,
-                onChanged: (value) {
-                  setState(() {
-                    _agreedToTerms = value ?? false;
-                  });
-                },
-              ),
+              
+              // Terms and Conditions
+              _buildTermsCheckbox(),
               const SizedBox(height: 24),
-              Consumer<AuthProvider>(
-                builder: (context, authProvider, _) {
-                  return ElevatedButton(
-                    onPressed: authProvider.isLoading ? null : _registerVendor,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: authProvider.isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : const Text(
-                            'Register as Vendor',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                  );
-                },
-              ),
+              
+              // Submit Button
+              _buildSubmitButton(),
               const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Already have an account? '),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed('/login');
-                    },
-                    child: const Text('Log In'),
-                  ),
-                ],
-              ),
+              
+              // Login Link
+              _buildLoginLink(),
               const SizedBox(height: 16),
             ],
           ),
@@ -549,4 +379,414 @@ class _VendorRegisterScreenState extends State<VendorRegisterScreen> {
       ),
     );
   }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+          letterSpacing: -0.2,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNameField() {
+    return TextFormField(
+      controller: _nameController,
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        labelText: 'Full Name *',
+        hintText: 'e.g., John Doe',
+        prefixIcon: const Icon(Icons.person_outline),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+      validator: (value) {
+        if (value?.isEmpty ?? true) {
+          return 'Full name is required';
+        }
+        final parts = value!.trim().split(' ');
+        if (parts.length < 2) {
+          return 'Please enter first and last name';
+        }
+        if (value.length < 3) {
+          return 'Name must be at least 3 characters';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildEmailField() {
+    return TextFormField(
+      controller: _emailController,
+      keyboardType: TextInputType.emailAddress,
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        labelText: 'Email Address *',
+        hintText: 'e.g., vendor@example.com',
+        prefixIcon: const Icon(Icons.email_outlined),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+      validator: (value) {
+        if (value?.isEmpty ?? true) {
+          return 'Email is required';
+        }
+        if (!_isValidEmail(value!)) {
+          return 'Please enter a valid email address';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildPhoneField() {
+    return TextFormField(
+      controller: _phoneController,
+      keyboardType: TextInputType.phone,
+      textInputAction: TextInputAction.next,
+      maxLength: 10,
+      decoration: InputDecoration(
+        labelText: 'Phone Number *',
+        hintText: 'e.g., 9876543210',
+        prefixIcon: const Icon(Icons.phone_outlined),
+        counterText: '',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+      validator: (value) {
+        if (value?.isEmpty ?? true) {
+          return 'Phone number is required';
+        }
+        if (!_isValidPhone(value!)) {
+          return 'Please enter a valid 10-digit phone number';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildPasswordField() {
+    return TextFormField(
+      controller: _passwordController,
+      obscureText: _obscurePassword,
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        labelText: 'Password *',
+        hintText: 'Min. 8 characters with uppercase, lowercase, number & symbol',
+        prefixIcon: const Icon(Icons.lock_outline),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+          ),
+          onPressed: () {
+            setState(() => _obscurePassword = !_obscurePassword);
+          },
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+      validator: (value) {
+        if (value?.isEmpty ?? true) {
+          return 'Password is required';
+        }
+        if ((value?.length ?? 0) < 8) {
+          return 'Password must be at least 8 characters';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildPasswordStrengthIndicator() {
+    if (_passwordStrength.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    
+    return Row(
+      children: [
+        Expanded(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: _passwordStrength == 'weak' ? 0.33 : _passwordStrength == 'medium' ? 0.66 : 1.0,
+              backgroundColor: Colors.grey[300],
+              valueColor: AlwaysStoppedAnimation<Color>(_getPasswordStrengthColor()),
+              minHeight: 8,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          _getPasswordStrengthText(),
+          style: TextStyle(
+            color: _getPasswordStrengthColor(),
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildConfirmPasswordField() {
+    return TextFormField(
+      controller: _confirmPasswordController,
+      obscureText: _obscureConfirmPassword,
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        labelText: 'Confirm Password *',
+        hintText: 'Re-enter your password',
+        prefixIcon: const Icon(Icons.lock_outline),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _obscureConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+          ),
+          onPressed: () {
+            setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
+          },
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+      validator: (value) {
+        if (value?.isEmpty ?? true) {
+          return 'Please confirm your password';
+        }
+        if (value != _passwordController.text) {
+          return 'Passwords do not match';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildBusinessNameField() {
+    return TextFormField(
+      controller: _businessNameController,
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        labelText: 'Business Name *',
+        hintText: 'e.g., Elite Catering Services',
+        prefixIcon: const Icon(Icons.business_outlined),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+      validator: (value) {
+        if (value?.isEmpty ?? true) {
+          return 'Business name is required';
+        }
+        if (value!.length < 3) {
+          return 'Business name must be at least 3 characters';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildCategoryDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _selectedCategory,
+      decoration: InputDecoration(
+        labelText: 'Business Category *',
+        prefixIcon: const Icon(Icons.category_outlined),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+      items: _categories.map((category) {
+        return DropdownMenuItem(
+          value: category,
+          child: Text(category),
+        );
+      }).toList(),
+      onChanged: (value) {
+        if (value != null) {
+          setState(() {
+            _selectedCategory = value;
+            _selectedServices.clear();
+          });
+        }
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please select a category';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildLocationField() {
+    return TextFormField(
+      controller: _locationController,
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        labelText: 'Location *',
+        hintText: 'e.g., Mumbai, Maharashtra',
+        prefixIcon: const Icon(Icons.location_on_outlined),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+      validator: (value) {
+        if (value?.isEmpty ?? true) {
+          return 'Location is required';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildDescriptionField() {
+    return TextFormField(
+      controller: _descriptionController,
+      maxLines: 4,
+      textInputAction: TextInputAction.newline,
+      decoration: InputDecoration(
+        labelText: 'Business Description *',
+        hintText: 'Describe your business, experience, and specialties',
+        prefixIcon: const Icon(Icons.description_outlined),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        alignLabelWithHint: true,
+      ),
+      validator: (value) {
+        if (value?.isEmpty ?? true) {
+          return 'Business description is required';
+        }
+        if (value!.length < 20) {
+          return 'Please provide at least 20 characters';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildServicesCheckboxes() {
+    final services = _servicesByCategory[_selectedCategory] ?? [];
+    
+    if (services.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text('No services available for this category'),
+      );
+    }
+
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: services.map((service) {
+        return FilterChip(
+          label: Text(service),
+          selected: _selectedServices.contains(service),
+          onSelected: (selected) {
+            setState(() {
+              if (selected) {
+                if (!_selectedServices.contains(service)) {
+                  _selectedServices.add(service);
+                }
+              } else {
+                _selectedServices.remove(service);
+              }
+            });
+          },
+          backgroundColor: Colors.transparent,
+          selectedColor: Theme.of(context).primaryColor.withOpacity(0.12),
+          side: BorderSide(
+            color: _selectedServices.contains(service)
+                ? Theme.of(context).primaryColor
+                : Colors.grey[400]!,
+            width: 1.5,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildTermsCheckbox() {
+    return CheckboxListTile(
+      title: Text(
+        'I agree to Terms and Conditions *',
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+      value: _agreedToTerms,
+      onChanged: (value) {
+        setState(() => _agreedToTerms = value ?? false);
+      },
+      controlAffinity: ListTileControlAffinity.leading,
+      contentPadding: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return ElevatedButton(
+      onPressed: (_isLoading) ? null : _registerVendor,
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 0,
+      ),
+      child: _isLoading
+          ? const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            )
+          : const Text('Register as Vendor'),
+    );
+  }
+
+  Widget _buildLoginLink() {
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text('Already have an account? '),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed('/login');
+            },
+            child: const Text(
+              'Log In',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
+
+

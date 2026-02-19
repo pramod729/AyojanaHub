@@ -1,5 +1,6 @@
 import 'package:ayojana_hub/auth_provider.dart';
 import 'package:ayojana_hub/theme/app_theme.dart';
+import 'package:ayojana_hub/theme/app_colors.dart';
 import 'package:ayojana_hub/theme/auth_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

@@ -63,7 +63,9 @@ class AyojanaHubApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Ayojana Hub',
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme(),
+        theme: AppTheme.darkTheme(),
+        darkTheme: AppTheme.darkTheme(),
+        themeMode: ThemeMode.dark,
         home: const SplashScreen(),
         routes: {
           '/splash': (context) => const SplashScreen(),

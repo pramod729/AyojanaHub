@@ -1,6 +1,7 @@
 
 import 'dart:io';
 
+import 'package:ayojana_hub/activity_service.dart';
 import 'package:ayojana_hub/usermodels.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -140,6 +141,16 @@ class AuthProvider with ChangeNotifier {
       });
 
       await _loadUserData();
+
+      // Log registration activity
+      if (_userModel != null) {
+        await ActivityService().logAuthActivity(
+          _userModel!,
+          action: 'register',
+          description: 'New user registered as ${role.toUpperCase()}',
+        );
+      }
+
       _isLoading = false;
       notifyListeners();
       return null;
@@ -183,6 +194,16 @@ class AuthProvider with ChangeNotifier {
       );
 
       await _loadUserData();
+
+      // Log login activity
+      if (_userModel != null) {
+        await ActivityService().logAuthActivity(
+          _userModel!,
+          action: 'login',
+          description: 'User logged in from mobile app',
+        );
+      }
+
       _isLoading = false;
       notifyListeners();
       return null;
@@ -238,6 +259,15 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> logout() async {
     try {
+      // Log logout activity before signing out
+      if (_userModel != null) {
+        await ActivityService().logAuthActivity(
+          _userModel!,
+          action: 'logout',
+          description: 'User logged out',
+        );
+      }
+
       await _auth.signOut();
       _userModel = null;
       notifyListeners();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'app_colors.dart';
 import 'app_theme.dart';
 
 class PremiumTextField extends StatefulWidget {
@@ -67,16 +68,16 @@ class _PremiumTextFieldState extends State<PremiumTextField> {
       style: GoogleFonts.inter(
         fontSize: 15,
         fontWeight: FontWeight.w500,
-        color: AppColors.textPrimary,
+        color: AppColors.textLight,
       ),
-      cursorColor: AppColors.primary,
+      cursorColor: AppColors.gold,
       decoration: InputDecoration(
         labelText: widget.labelText,
         hintText: widget.hintText,
         prefixIcon: widget.prefixIcon != null
             ? Icon(
                 widget.prefixIcon,
-                color: AppColors.darkGray,
+                color: AppColors.textSecondary,
                 size: AppDimensions.iconM,
               )
             : null,
@@ -84,7 +85,7 @@ class _PremiumTextFieldState extends State<PremiumTextField> {
             ? IconButton(
                 icon: Icon(
                   widget.suffixIcon,
-                  color: AppColors.darkGray,
+                  color: AppColors.textSecondary,
                   size: AppDimensions.iconM,
                 ),
                 onPressed: widget.onSuffixTapped ??
@@ -98,22 +99,25 @@ class _PremiumTextFieldState extends State<PremiumTextField> {
               )
             : null,
         filled: true,
-        fillColor: AppColors.lightGray,
+        fillColor: AppColors.card,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-          borderSide: BorderSide.none,
+          borderSide: const BorderSide(
+            color: AppColors.border,
+            width: 1,
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusM),
           borderSide: const BorderSide(
-            color: AppColors.mediumGray,
-            width: 1.5,
+            color: AppColors.border,
+            width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusM),
           borderSide: const BorderSide(
-            color: AppColors.primary,
+            color: AppColors.gold,
             width: 2,
           ),
         ),
@@ -169,20 +173,13 @@ class PremiumButton extends StatelessWidget {
       height: height ?? 56,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-        gradient: LinearGradient(
-          colors: [
-            backgroundColor ?? AppColors.primary,
-            (backgroundColor ?? AppColors.primary).withOpacity(0.9),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: backgroundColor ?? AppColors.gold,
         boxShadow: [
           BoxShadow(
-            color: (backgroundColor ?? AppColors.primary).withOpacity(0.3),
-            blurRadius: 16,
+            color: (backgroundColor ?? AppColors.gold).withOpacity(0.12),
+            blurRadius: 8,
             spreadRadius: 0,
-            offset: const Offset(0, 8),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -199,27 +196,29 @@ class PremiumButton extends StatelessWidget {
                     child: CircularProgressIndicator(
                       strokeWidth: 2.5,
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        textColor ?? Colors.white,
+                        textColor ?? Colors.black,
                       ),
                     ),
                   )
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (icon != null) ...[
-                        Icon(
-                          icon,
-                          color: textColor ?? Colors.white,
-                          size: AppDimensions.iconM,
-                        ),
-                        const SizedBox(width: 8),
-                      ],
+                      if (icon != null) ...
+                        [
+                          Icon(
+                            icon!,
+                            color: textColor ?? Colors.black,
+                            size: AppDimensions.iconM,
+                          ),
+                          const SizedBox(width: 8),
+                        ],
                       Text(
                         text,
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: textColor ?? Colors.white,
+                          color: textColor ?? Colors.black,
+                          letterSpacing: 0.1,
                         ),
                       ),
                     ],
@@ -258,13 +257,16 @@ class AuthPageHeader extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(AppDimensions.paddingS),
                 decoration: BoxDecoration(
-                  color: AppColors.lightGray,
-                  borderRadius:
-                      BorderRadius.circular(AppDimensions.radiusM),
+                  color: AppColors.card,
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+                  border: Border.all(
+                    color: AppColors.border,
+                    width: 1,
+                  ),
                 ),
                 child: const Icon(
                   Icons.arrow_back_ios_new_rounded,
-                  color: AppColors.textPrimary,
+                  color: AppColors.textLight,
                   size: 18,
                 ),
               ),
@@ -275,8 +277,9 @@ class AuthPageHeader extends StatelessWidget {
           style: GoogleFonts.poppins(
             fontSize: 32,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: AppColors.textLight,
             letterSpacing: -0.5,
+            height: 1.2,
           ),
         ),
         const SizedBox(height: 8),
@@ -287,6 +290,7 @@ class AuthPageHeader extends StatelessWidget {
             fontWeight: FontWeight.w500,
             color: AppColors.textSecondary,
             height: 1.6,
+            letterSpacing: 0.1,
           ),
         ),
       ],
@@ -315,7 +319,7 @@ class SuccessState extends StatelessWidget {
           height: 120,
           width: 120,
           decoration: BoxDecoration(
-            color: AppColors.success.withOpacity(0.1),
+            color: AppColors.success.withOpacity(0.12),
             borderRadius: BorderRadius.circular(AppDimensions.radiusXL),
           ),
           child: const Icon(
@@ -331,6 +335,7 @@ class SuccessState extends StatelessWidget {
             fontSize: 24,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
+            letterSpacing: -0.3,
           ),
           textAlign: TextAlign.center,
         ),
@@ -341,6 +346,8 @@ class SuccessState extends StatelessWidget {
             fontSize: 15,
             fontWeight: FontWeight.w500,
             color: AppColors.textSecondary,
+            letterSpacing: 0.1,
+            height: 1.5,
           ),
           textAlign: TextAlign.center,
         ),
