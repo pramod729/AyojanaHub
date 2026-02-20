@@ -1,6 +1,7 @@
 import 'package:ayojana_hub/auth_provider.dart';
 import 'package:ayojana_hub/booking_model.dart';
 import 'package:ayojana_hub/booking_provider.dart';
+import 'package:ayojana_hub/theme/app_colors.dart';
 import 'package:ayojana_hub/vendor_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -118,8 +119,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.gradientStart,
       appBar: AppBar(
         title: const Text('Book Service'),
+        backgroundColor: AppColors.gradientStart,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -130,7 +133,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF6C63FF),
+                color: AppColors.card,
+                border: Border.all(color: AppColors.border, width: 1),
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(20),
                   bottomRight: Radius.circular(20),
@@ -143,7 +147,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                     children: [
                       CircleAvatar(
                         radius: 40,
-                        backgroundColor: Colors.white,
+                        backgroundColor: AppColors.iconBackground,
                         child: widget.vendor.profileImage != null
                             ? ClipOval(
                                 child: Image.network(
@@ -155,7 +159,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     widget.vendor.name[0].toUpperCase(),
                                     style: const TextStyle(
                                       fontSize: 32,
-                                      color: Color(0xFF6C63FF),
+                                      color: AppColors.iconPrimary,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -165,7 +169,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                 widget.vendor.name[0].toUpperCase(),
                                 style: const TextStyle(
                                   fontSize: 32,
-                                  color: Color(0xFF6C63FF),
+                                  color: AppColors.iconPrimary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -180,7 +184,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: AppColors.textLight,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -188,7 +192,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                               widget.vendor.category,
                               style: const TextStyle(
                                 fontSize: 14,
-                                color: Colors.white70,
+                                color: AppColors.textSecondary,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -199,7 +203,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                 Text(
                                   '${widget.vendor.rating.toStringAsFixed(1)} (${widget.vendor.reviewCount})',
                                   style: const TextStyle(
-                                    color: Colors.white,
+                                    color: AppColors.textLight,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -226,6 +230,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: AppColors.textLight,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -240,7 +245,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         filled: true,
-                        fillColor: Colors.grey[50],
+                        fillColor: AppColors.card,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -261,11 +266,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           filled: true,
-                          fillColor: Colors.grey[50],
+                          fillColor: AppColors.card,
                         ),
                         child: Text(
                           DateFormat('MMM dd, yyyy').format(_selectedEventDate),
-                          style: const TextStyle(fontSize: 16),
+                          style: const TextStyle(fontSize: 16, color: AppColors.textLight),
                         ),
                       ),
                     ),
@@ -282,7 +287,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         filled: true,
-                        fillColor: Colors.grey[50],
+                        fillColor: AppColors.card,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -307,7 +312,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         filled: true,
-                        fillColor: Colors.grey[50],
+                        fillColor: AppColors.card,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -332,7 +337,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         filled: true,
-                        fillColor: Colors.grey[50],
+                        fillColor: AppColors.card,
                         alignLabelWithHint: true,
                       ),
                     ),

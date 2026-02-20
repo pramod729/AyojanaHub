@@ -3,6 +3,7 @@ import 'package:ayojana_hub/event_detail_screen.dart';
 import 'package:ayojana_hub/event_model.dart';
 import 'package:ayojana_hub/event_proposals_screen.dart';
 import 'package:ayojana_hub/event_provider.dart';
+import 'package:ayojana_hub/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -33,11 +34,12 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: AppColors.gradientStart,
       appBar: AppBar(
         title: const Text('My Events'),
         automaticallyImplyLeading: false,
         centerTitle: true,
+        backgroundColor: AppColors.gradientStart,
         elevation: 0,
       ),
       body: Consumer<EventProvider>(
@@ -54,23 +56,21 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
                   Icon(
                     Icons.event_busy,
                     size: 80,
-                    color: Colors.grey[400],
+                    color: AppColors.iconInactive,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'No events yet',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey[600],
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: AppColors.textLight,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Create your first event and get proposals',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[500],
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -80,11 +80,6 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
                     },
                     icon: const Icon(Icons.add),
                     label: const Text('Create Event'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      backgroundColor: const Color(0xFF6C63FF),
-                      foregroundColor: Colors.white,
-                    ),
                   ),
                 ],
               ),
@@ -110,7 +105,6 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
         },
         icon: const Icon(Icons.add),
         label: const Text('New Event'),
-        backgroundColor: const Color(0xFF6C63FF),
       ),
     );
   }
@@ -157,6 +151,7 @@ class _EventCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: AppColors.border, width: 1),
       ),
       child: InkWell(
         onTap: () {
@@ -178,10 +173,9 @@ class _EventCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       event.eventName,
-                      style: const TextStyle(
-                        fontSize: 18,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF1F2937),
+                        color: AppColors.textLight,
                       ),
                     ),
                   ),
@@ -211,14 +205,13 @@ class _EventCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF6C63FF).withOpacity(0.1),
+                      color: AppColors.iconBackground,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       event.eventType,
-                      style: const TextStyle(
-                        color: Color(0xFF6C63FF),
-                        fontSize: 12,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.gold,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -240,24 +233,24 @@ class _EventCard extends StatelessWidget {
                 icon: Icons.people,
                 text: '${event.guestCount} guests',
               ),
-              if (event.proposalCount > 0) ...[
+              if (event.proposalCount > 0) ...[      
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
+                    color: AppColors.iconBackground,
                     borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.gold, width: 1),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.mail, size: 18, color: Colors.blue.shade700),
+                      Icon(Icons.mail, size: 18, color: AppColors.gold),
                       const SizedBox(width: 8),
                       Text(
                         '${event.proposalCount} proposal${event.proposalCount > 1 ? 's' : ''} received',
-                        style: TextStyle(
-                          color: Colors.blue.shade700,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.gold,
                           fontWeight: FontWeight.w600,
-                          fontSize: 13,
                         ),
                       ),
                       const Spacer(),
@@ -294,12 +287,14 @@ class _DetailRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: Colors.grey[600]),
+        Icon(icon, size: 16, color: AppColors.textSecondary),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
             text,
-            style: TextStyle(color: Colors.grey[700], fontSize: 14),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary,
+            ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

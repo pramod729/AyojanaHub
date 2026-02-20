@@ -14,9 +14,10 @@ class AppTheme {
         elevation: 0,
         centerTitle: false,
         titleTextStyle: GoogleFonts.montserrat(
-          fontSize: 20,
+          fontSize: 24,
           fontWeight: FontWeight.w700,
-          color: AppColors.textLight,
+          color: AppColors.headerText,
+          letterSpacing: 0.5,
         ),
         iconTheme: const IconThemeData(color: AppColors.textLight),
       ),
@@ -25,14 +26,27 @@ class AppTheme {
           fontSize: 32,
           fontWeight: FontWeight.w700,
           color: AppColors.textLight,
+          letterSpacing: 0.3,
         ),
         headlineMedium: GoogleFonts.montserrat(
           fontSize: 24,
           fontWeight: FontWeight.w700,
           color: AppColors.textLight,
+          letterSpacing: 0.3,
+        ),
+        headlineSmall: GoogleFonts.montserrat(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: AppColors.textLight,
+          letterSpacing: 0.2,
         ),
         titleLarge: GoogleFonts.montserrat(
           fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: AppColors.textLight,
+        ),
+        titleMedium: GoogleFonts.montserrat(
+          fontSize: 16,
           fontWeight: FontWeight.w600,
           color: AppColors.textLight,
         ),
@@ -46,25 +60,39 @@ class AppTheme {
           fontWeight: FontWeight.w500,
           color: AppColors.textSecondary,
         ),
+        bodySmall: GoogleFonts.montserrat(
+          fontSize: 13,
+          fontWeight: FontWeight.w400,
+          color: AppColors.textSecondary,
+        ),
+        labelLarge: GoogleFonts.montserrat(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: AppColors.textLight,
+        ),
       ),
       cardTheme: CardThemeData(
         color: AppColors.card,
-        elevation: 4,
-        shadowColor: Colors.black.withOpacity(0.6),
+        elevation: 2,
+        shadowColor: Colors.black.withOpacity(0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: AppColors.border, width: 0.8),
+          side: BorderSide(color: AppColors.border, width: 1),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.gold,
-          foregroundColor: Colors.black,
+          foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           elevation: 2,
+          textStyle: GoogleFonts.montserrat(
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -73,6 +101,10 @@ class AppTheme {
           side: BorderSide(color: AppColors.gold, width: 1.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
+          ),
+          textStyle: GoogleFonts.montserrat(
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
           ),
         ),
       ),
@@ -106,9 +138,39 @@ class AppTheme {
       iconTheme: const IconThemeData(color: AppColors.textLight),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.gold,
-        foregroundColor: Colors.black,
+        foregroundColor: Colors.white,
       ),
       dividerColor: AppColors.border,
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: AppColors.card,
+        height: 70,
+        labelTextStyle: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return GoogleFonts.montserrat(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppColors.gold,
+            );
+          }
+          return GoogleFonts.montserrat(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.iconInactive,
+          );
+        }),
+        iconTheme: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return IconThemeData(
+              color: AppColors.gold,
+              size: 28,
+            );
+          }
+          return IconThemeData(
+            color: AppColors.iconInactive,
+            size: 24,
+          );
+        }),
+      ),
     );
   }
 }

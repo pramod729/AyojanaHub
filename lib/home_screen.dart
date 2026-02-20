@@ -28,15 +28,48 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _screens[_currentIndex],
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) => setState(() => _currentIndex = index),
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.event_outlined), selectedIcon: Icon(Icons.event), label: 'Events'),
-          NavigationDestination(icon: Icon(Icons.bookmark_outline), selectedIcon: Icon(Icons.bookmark), label: 'Bookings'),
-          NavigationDestination(icon: Icon(Icons.person_outlined), selectedIcon: Icon(Icons.person), label: 'Profile'),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(
+              color: AppColors.border,
+              width: 1,
+            ),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 8,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: NavigationBar(
+          selectedIndex: _currentIndex,
+          onDestinationSelected: (index) => setState(() => _currentIndex = index),
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home_outlined),
+              selectedIcon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.event_outlined),
+              selectedIcon: Icon(Icons.event),
+              label: 'Events',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.bookmark_outline),
+              selectedIcon: Icon(Icons.bookmark),
+              label: 'Bookings',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person_outlined),
+              selectedIcon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -60,7 +93,8 @@ class HomeTab extends StatelessWidget {
             Text(
               'Ayojana Hub',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: AppColors.gold,
+                color: AppColors.headerText,
+                letterSpacing: 0.5,
               ),
             ),
           ],
@@ -88,25 +122,22 @@ class HomeTab extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFF0F172A), // Deep Navy
-                      Color(0xFF1E3A8A), // Royal Blue
-                    ],
-                  ),
+                  color: AppColors.card,
                   borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(28),
-                    bottomRight: Radius.circular(28),
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                  ),
+                  border: Border.all(
+                    color: AppColors.border,
+                    width: 1,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.35),
-                      blurRadius: 18,
-                      offset: const Offset(0, 8),
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
@@ -116,31 +147,33 @@ class HomeTab extends StatelessWidget {
                     RichText(
                       text: TextSpan(
                         style: GoogleFonts.montserrat(
-                          fontSize: 22,
+                          fontSize: 24,
                           fontWeight: FontWeight.w700,
                           color: AppColors.textLight,
+                          letterSpacing: 0.2,
                         ),
                         children: [
                           const TextSpan(text: 'Hello, '),
                           TextSpan(
                             text: userName,
                             style: GoogleFonts.montserrat(
-                              fontSize: 22,
+                              fontSize: 24,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFFF5C542), // Soft Gold
+                              color: AppColors.gold,
+                              letterSpacing: 0.2,
                             ),
                           ),
                           const TextSpan(text: '!'),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
                     Text(
                       'What event are you planning today?',
                       style: GoogleFonts.montserrat(
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: const Color(0xFFC7D2FE),
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ],
@@ -253,22 +286,35 @@ class _QuickActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: AppColors.border, width: 1),
+      ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 36, color: const Color(0xFF1E88E5)),
-              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.iconBackground,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, size: 40, color: AppColors.iconPrimary),
+              ),
+              const SizedBox(height: 16),
               Text(
                 label,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleSmall,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
               ),
             ],
           ),
@@ -294,26 +340,32 @@ class _CategoryCard extends StatelessWidget {
         width: 100,
         margin: const EdgeInsets.only(right: 12),
         child: Card(
-          elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: AppColors.border, width: 1),
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  shape: BoxShape.circle,
+                  color: color.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, size: 32, color: color),
+                child: Icon(icon, size: 36, color: color),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
                   label,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.labelMedium,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -336,30 +388,39 @@ class _ServiceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: AppColors.border, width: 1),
+      ),
       child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
+        contentPadding: const EdgeInsets.all(18),
         leading: Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E88E5).withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
+            color: AppColors.iconBackground,
+            borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, color: const Color(0xFF1E88E5), size: 24),
+          child: Icon(icon, color: AppColors.iconPrimary, size: 28),
         ),
         title: Text(
           title,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: Text(
-            description,
-            style: Theme.of(context).textTheme.bodySmall,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 17,
           ),
         ),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: Text(
+            description,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary,
+              fontSize: 13,
+            ),
+          ),
+        ),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 18, color: AppColors.gold),
         onTap: () => Navigator.pushNamed(context, '/vendors'),
       ),
     );

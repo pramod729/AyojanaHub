@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Background gradient
-  static const Color gradientStart = Color(0xFF0B1220); // dark navy
-  static const Color gradientEnd = Color(0xFF111C34); // deep navy
+  // Background gradient - Updated for improved contrast
+  static const Color gradientStart = Color(0xFF0F172A); // Lighter dark navy
+  static const Color gradientEnd = Color(0xFF0F172A); // Unified background
 
-  // Accents
-  static const Color gold = Color(0xFFD4AF37);
+  // Accents - Improved visibility
+  static const Color gold = Color(0xFF3B82F6); // Primary accent - Bright blue
   static const Color softYellow = Color(0xFFF5C542);
 
-  // Surfaces
-  static const Color card = Color(0xFF16213E);
-  static const Color border = Color(0xFF1F2A44);
+  // Surfaces - Lighter cards for better contrast
+  static const Color card = Color(0xFF1E293B); // Lighter dark surface
+  static const Color border = Color(0xFF334155); // More visible border
 
-  // Text
-  static const Color textLight = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFFB8C1D1);
+  // Text - Pure white for maximum contrast
+  static const Color textLight = Color(0xFFFFFFFF); // Pure white
+  static const Color textSecondary = Color(0xFFE0E0E0); // Light gray for subtitles
+
+  // Icon colors
+  static const Color iconPrimary = Color(0xFF3B82F6); // Bright blue accent
+  static const Color iconBackground = Color(0xFF1E3A8A); // Dark blue icon background
+  static const Color iconInactive = Color(0xFF94A3B8); // Muted blue-gray
+
+  // Header styling
+  static const Color headerText = Color(0xFFF8FAFC); // Very light text for headers
 
   // Status
   static const Color success = Color(0xFF12B981);

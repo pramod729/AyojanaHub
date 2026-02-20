@@ -1,5 +1,6 @@
 import 'package:ayojana_hub/booking_model.dart';
 import 'package:ayojana_hub/booking_provider.dart';
+import 'package:ayojana_hub/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
@@ -98,8 +99,10 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     final booking = widget.booking;
 
     return Scaffold(
+      backgroundColor: AppColors.gradientStart,
       appBar: AppBar(
         title: const Text('Booking Details'),
+        backgroundColor: AppColors.gradientStart,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -110,10 +113,11 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: _getStatusColor(booking.status),
+                color: AppColors.card,
+                border: Border.all(color: AppColors.border, width: 1),
                 borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
                 ),
               ),
               child: Column(
@@ -123,15 +127,15 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                         ? Icons.check_circle_outline
                         : Icons.hourglass_empty,
                     size: 60,
-                    color: Colors.white,
+                    color: _getStatusColor(booking.status),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     booking.status.toUpperCase(),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: _getStatusColor(booking.status),
                     ),
                   ),
                 ],
@@ -148,6 +152,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
+                      color: AppColors.textLight,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -180,7 +185,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                     icon: Icons.attach_money,
                     label: 'Price',
                     value: 'NPR ${booking.price.toStringAsFixed(0)}',
-                    valueColor: const Color(0xFF6C63FF),
+                    valueColor: AppColors.gold,
                   ),
                   if (booking.notes != null && booking.notes!.isNotEmpty) ...[
                     const SizedBox(height: 16),
@@ -189,14 +194,15 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: AppColors.textLight,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       booking.notes!,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
-                        color: Colors.grey[700],
+                        color: AppColors.textSecondary,
                         height: 1.5,
                       ),
                     ),
@@ -208,7 +214,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                       child: ElevatedButton(
                         onPressed: () => _cancelBooking(context),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          backgroundColor: AppColors.error,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         child: const Text('Cancel Booking'),
@@ -218,7 +224,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                   const SizedBox(height: 20),
                   if (_docData != null && _docData!['history'] != null) ...[
                     const SizedBox(height: 16),
-                    const Text('Status History', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const Text('Status History', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textLight)),
                     const SizedBox(height: 8),
                     Column(
                       children: List<Widget>.from(((_docData!['history'] ?? []) as List).map((h) {
@@ -230,9 +236,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                         }
                         return ListTile(
                           dense: true,
-                          leading: Icon(Icons.circle, size: 12, color: Colors.grey[600]),
-                          title: Text(status.toString()),
-                          subtitle: Text(timeLabel),
+                          leading: const Icon(Icons.circle, size: 12, color: AppColors.iconInactive),
+                          title: Text(status.toString(), style: const TextStyle(color: AppColors.textLight)),
+                          subtitle: Text(timeLabel, style: const TextStyle(color: AppColors.textSecondary)),
                         );
                       })),
                     ),
@@ -270,10 +276,10 @@ class _InfoRow extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFF6C63FF).withOpacity(0.1),
+              color: AppColors.iconBackground,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: const Color(0xFF6C63FF), size: 20),
+            child: Icon(icon, color: AppColors.iconPrimary, size: 20),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -282,9 +288,9 @@ class _InfoRow extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
-                    color: Colors.grey[600],
+                    color: AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -293,7 +299,7 @@ class _InfoRow extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: valueColor,
+                    color: valueColor ?? AppColors.textLight,
                   ),
                 ),
               ],

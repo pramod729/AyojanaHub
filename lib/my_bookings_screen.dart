@@ -2,6 +2,7 @@ import 'package:ayojana_hub/auth_provider.dart';
 import 'package:ayojana_hub/booking_detail_screen.dart';
 import 'package:ayojana_hub/booking_model.dart';
 import 'package:ayojana_hub/booking_provider.dart';
+import 'package:ayojana_hub/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -40,18 +41,18 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.gradientStart,
       appBar: AppBar(
         title: const Text('My Bookings'),
         automaticallyImplyLeading: false,
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.gradientStart,
         elevation: 0,
       ),
       body: Column(
         children: [
           Container(
-            color: Colors.white,
+            color: AppColors.card,
             padding: const EdgeInsets.all(16),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -96,7 +97,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                 if (bookingProvider.isLoading) {
                   return const Center(
                     child: CircularProgressIndicator(
-                      color: Color(0xFF4F46E5),
+                      color: AppColors.gold,
                     ),
                   );
                 }
@@ -108,21 +109,21 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.error_outline, size: 48, color: Color(0xFFEF4444)),
+                          const Icon(Icons.error_outline, size: 48, color: AppColors.error),
                           const SizedBox(height: 12),
                           Text(
                             bookingProvider.error!,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontSize: 16,
-                              color: Color(0xFF1F2937),
+                              color: AppColors.textLight,
                             ),
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: _loadBookings,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF4F46E5),
+                              backgroundColor: AppColors.gold,
                             ),
                             child: const Text('Try Again'),
                           ),
@@ -143,18 +144,13 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                           width: 100,
                           height: 100,
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                const Color(0xFF4F46E5).withOpacity(0.2),
-                                const Color(0xFF6366F1).withOpacity(0.1),
-                              ],
-                            ),
+                            color: AppColors.iconBackground,
                             borderRadius: BorderRadius.circular(50),
                           ),
                           child: const Icon(
                             Icons.bookmark_border,
                             size: 50,
-                            color: Color(0xFF4F46E5),
+                            color: AppColors.iconPrimary,
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -165,7 +161,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1F2937),
+                            color: AppColors.textLight,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -173,7 +169,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                           'Book vendors for your events',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Color(0xFF6B7280),
+                            color: AppColors.textSecondary,
                           ),
                         ),
                         if (_selectedFilter == 'all') ...[
@@ -197,7 +193,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
 
                 return RefreshIndicator(
                   onRefresh: _loadBookings,
-                  color: const Color(0xFF4F46E5),
+                  color: AppColors.gold,
                   child: ListView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: filteredBookings.length,
@@ -237,13 +233,13 @@ class _FilterChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF4F46E5) : const Color(0xFFF3F4F6),
+          color: isSelected ? AppColors.gold : AppColors.card,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? Colors.white : const Color(0xFF6B7280),
+            color: isSelected ? Colors.black : AppColors.textSecondary,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
           ),
         ),
@@ -293,13 +289,14 @@ class _BookingCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -324,9 +321,7 @@ class _BookingCard extends StatelessWidget {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF4F46E5), Color(0xFF6366F1)],
-                      ),
+                      color: AppColors.iconBackground,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(
@@ -335,7 +330,7 @@ class _BookingCard extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: AppColors.iconPrimary,
                         ),
                       ),
                     ),
@@ -350,14 +345,14 @@ class _BookingCard extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1F2937),
+                            color: AppColors.textLight,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           booking.vendorCategory,
                           style: const TextStyle(
-                            color: Color(0xFF6B7280),
+                            color: AppColors.textSecondary,
                             fontSize: 13,
                           ),
                         ),
@@ -414,13 +409,13 @@ class _BookingCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF4F46E5).withOpacity(0.1),
+                          color: AppColors.iconBackground,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
                           Icons.attach_money,
                           size: 16,
-                          color: Color(0xFF4F46E5),
+                          color: AppColors.iconPrimary,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -429,15 +424,15 @@ class _BookingCard extends StatelessWidget {
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
-                          color: Color(0xFF4F46E5),
+                          color: AppColors.gold,
                         ),
                       ),
                     ],
                   ),
-                  Icon(
+                  const Icon(
                     Icons.arrow_forward_ios,
                     size: 14,
-                    color: Colors.grey[400],
+                    color: AppColors.iconInactive,
                   ),
                 ],
               ),
@@ -462,13 +457,13 @@ class _InfoRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: const Color(0xFF6B7280)),
+        Icon(icon, size: 18, color: AppColors.textSecondary),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
             label,
             style: const TextStyle(
-              color: Color(0xFF1F2937),
+              color: AppColors.textLight,
               fontSize: 14,
             ),
           ),

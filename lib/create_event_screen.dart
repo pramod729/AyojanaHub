@@ -1,6 +1,7 @@
 import 'package:ayojana_hub/auth_provider.dart';
 import 'package:ayojana_hub/event_model.dart';
 import 'package:ayojana_hub/event_provider.dart';
+import 'package:ayojana_hub/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -135,9 +136,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: AppColors.gradientStart,
       appBar: AppBar(
         title: const Text('Create New Event'),
+        backgroundColor: AppColors.gradientStart,
         elevation: 0,
         centerTitle: true,
       ),
@@ -151,29 +153,27 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF6C63FF), Color(0xFF4F46E5)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: AppColors.card,
+                  border: Border.all(color: AppColors.border, width: 1),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Column(
+                child: Column(
                   children: [
-                    Icon(Icons.celebration, color: Colors.white, size: 48),
-                    SizedBox(height: 12),
+                    Icon(Icons.celebration, color: AppColors.gold, size: 48),
+                    const SizedBox(height: 12),
                     Text(
                       'Plan Your Perfect Event',
-                      style: TextStyle(
-                        fontSize: 20,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: AppColors.textLight,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       'Vendors will compete with their best proposals',
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -183,9 +183,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Event Type',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textLight,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Wrap(
@@ -202,10 +205,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             _updateRequiredServices();
                           });
                         },
-                        selectedColor: const Color(0xFF6C63FF),
-                        backgroundColor: Colors.white,
+                        selectedColor: AppColors.gold,
+                        backgroundColor: AppColors.card,
                         labelStyle: TextStyle(
-                          color: selected ? Colors.white : Colors.black87,
+                          color: selected ? Colors.black : AppColors.textLight,
                           fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
                         ),
                         elevation: 2,
@@ -218,20 +221,23 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE0E7FF),
+                  color: AppColors.iconBackground,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFF6C63FF).withOpacity(0.3)),
+                  border: Border.all(color: AppColors.gold, width: 1),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.info_outline, color: const Color(0xFF6C63FF), size: 20),
+                        Icon(Icons.info_outline, color: AppColors.gold, size: 20),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           'Required Services',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textLight,
+                          ),
                         ),
                       ],
                     ),
@@ -241,17 +247,19 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       runSpacing: 6,
                       children: _selectedServices.map((service) {
                         return Chip(
-                          label: Text(service, style: const TextStyle(fontSize: 12)),
+                          label: Text(service, style: Theme.of(context).textTheme.bodySmall),
                           avatar: const Icon(Icons.check_circle, size: 16),
-                          backgroundColor: Colors.white,
+                          backgroundColor: AppColors.card,
                           labelPadding: const EdgeInsets.symmetric(horizontal: 4),
                         );
                       }).toList(),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       'Vendors in these categories will be notified',
-                      style: TextStyle(fontSize: 11, color: Colors.black54),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -262,21 +270,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 decoration: InputDecoration(
                   labelText: 'Event Name',
                   hintText: 'e.g., Sarah & John Wedding',
-                  prefixIcon: const Icon(Icons.event, color: Color(0xFF6C63FF)),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 2),
-                  ),
+                  prefixIcon: const Icon(Icons.event),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -291,21 +285,13 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 child: InputDecorator(
                   decoration: InputDecoration(
                     labelText: 'Event Date',
-                    prefixIcon: const Icon(Icons.calendar_today, color: Color(0xFF6C63FF)),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                    ),
+                    prefixIcon: const Icon(Icons.calendar_today),
                   ),
                   child: Text(
                     DateFormat('EEEE, MMMM dd, yyyy').format(_selectedDate),
-                    style: const TextStyle(fontSize: 16),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: AppColors.textLight,
+                    ),
                   ),
                 ),
               ),
@@ -315,21 +301,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 decoration: InputDecoration(
                   labelText: 'Location',
                   hintText: 'e.g., Kathmandu, Nepal',
-                  prefixIcon: const Icon(Icons.location_on, color: Color(0xFF6C63FF)),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 2),
-                  ),
+                  prefixIcon: const Icon(Icons.location_on),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -347,21 +319,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: 'Expected Guests',
-                        prefixIcon: const Icon(Icons.people, color: Color(0xFF6C63FF)),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 2),
-                        ),
+                        prefixIcon: const Icon(Icons.people),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -381,22 +339,17 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: 'Budget (NPR)',
-                        prefixIcon: const Icon(Icons.attach_money, color: Color(0xFF6C63FF)),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 2),
-                        ),
+                        prefixIcon: const Icon(Icons.attach_money),
                       ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Required';
+                        }
+                        if (double.tryParse(value) == null) {
+                          return 'Invalid';
+                        }
+                        return null;
+                      },
                     ),
                   ),
                 ],
@@ -410,21 +363,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   hintText: 'Tell vendors about your event requirements...',
                   prefixIcon: const Padding(
                     padding: EdgeInsets.only(bottom: 60),
-                    child: Icon(Icons.description, color: Color(0xFF6C63FF)),
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 2),
+                    child: Icon(Icons.description),
                   ),
                 ),
                 validator: (value) {
@@ -442,20 +381,17 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  backgroundColor: const Color(0xFF6C63FF),
-                  elevation: 4,
                 ),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.send, color: Colors.white),
+                    Icon(Icons.send),
                     SizedBox(width: 8),
                     Text(
                       'Create Event & Get Proposals',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
                       ),
                     ),
                   ],
