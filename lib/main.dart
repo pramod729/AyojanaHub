@@ -1,4 +1,5 @@
 import 'package:ayojana_hub/auth_provider.dart';
+import 'package:ayojana_hub/ai_assistant_screen.dart';
 import 'package:ayojana_hub/booking_provider.dart';
 import 'package:ayojana_hub/chat_provider.dart';
 import 'package:ayojana_hub/create_event_screen.dart';
@@ -7,7 +8,7 @@ import 'package:ayojana_hub/event_provider.dart';
 import 'package:ayojana_hub/firebase_options.dart';
 import 'package:ayojana_hub/forgot_password_screen_new.dart';
 import 'package:ayojana_hub/home_screen.dart';
-import 'package:ayojana_hub/login_screen_new.dart';
+import 'package:ayojana_hub/login_screen.dart';
 import 'package:ayojana_hub/my_bookings_screen.dart';
 import 'package:ayojana_hub/my_events_screen.dart';
 import 'package:ayojana_hub/notification_service.dart';
@@ -66,7 +67,7 @@ class AyojanaHubApp extends StatelessWidget {
         theme: AppTheme.darkTheme(),
         darkTheme: AppTheme.darkTheme(),
         themeMode: ThemeMode.dark,
-        home: const SplashScreen(),
+        home: const LoginScreen(),
         routes: {
           '/splash': (context) => const SplashScreen(),
           '/login': (context) => const LoginScreen(),
@@ -83,6 +84,7 @@ class AyojanaHubApp extends StatelessWidget {
           '/my-bookings': (context) => const MyBookingsScreen(),
           '/profile': (context) => const ProfileScreen(),
           '/admin-analytics': (context) => const AdminAnalyticsScreen(),
+          '/ai-assistant': (context) => const AIAssistantScreen(),
         },
         onGenerateRoute: (settings) {
           if (settings.name == '/submit-proposal') {

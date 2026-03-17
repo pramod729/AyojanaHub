@@ -1,3 +1,6 @@
+// Legacy login screen backup (moved from login_screen_new.dart)
+// Kept for reference. The app now uses lib/login_screen.dart
+
 import 'package:ayojana_hub/auth_provider.dart';
 import 'package:ayojana_hub/theme/app_theme.dart';
 import 'package:ayojana_hub/theme/app_colors.dart';

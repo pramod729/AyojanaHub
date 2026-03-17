@@ -6,12 +6,13 @@ import 'package:ayojana_hub/usermodels.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 class AuthProvider with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  
   User? _user;
   UserModel? _userModel;
   bool _isLoading = false;
@@ -27,21 +28,38 @@ class AuthProvider with ChangeNotifier {
       if (user != null) {
         _loadUserData();
       } else {
+        // user signed out, clear model and cancel any listener
         _userModel = null;
+        _userDocSub?.cancel();
+        _userDocSub = null;
       }
       notifyListeners();
     });
   }
 
+  // keep a subscription so that updates to the user document (role changes, etc.)
+  // are reflected immediately in the UI.  This makes it possible to change a
+  // user's role directly from the Firebase console and have the app react
+  // without requiring a re‑login.
+  StreamSubscription<DocumentSnapshot>? _userDocSub;
+
   Future<void> _loadUserData() async {
     if (_user == null) return;
 
+    // cancel any existing listener before attaching a new one
+    await _userDocSub?.cancel();
+
     try {
-      final doc = await _firestore.collection('users').doc(_user!.uid).get();
-      if (doc.exists) {
-        _userModel = UserModel.fromMap(doc.data()!, doc.id);
-        notifyListeners();
-      }
+      _userDocSub = _firestore
+          .collection('users')
+          .doc(_user!.uid)
+          .snapshots()
+          .listen((doc) {
+        if (doc.exists) {
+          _userModel = UserModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+          notifyListeners();
+        }
+      });
     } catch (e) {
       debugPrint('Error loading user data: $e');
     }

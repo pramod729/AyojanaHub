@@ -1,0 +1,239 @@
+Analyzing ayojanahub...                                         
+
+   info - The file name 'ACTIVITY_LOGGING_GUIDE.dart' isn't a lower_case_with_underscores identifier - ACTIVITY_LOGGING_GUIDE.dart:1:1 - file_names
+   info - The file name 'INTEGRATION_EXAMPLES.dart' isn't a lower_case_with_underscores identifier - INTEGRATION_EXAMPLES.dart:1:1 - file_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\admin_analytics_screen.dart:323:38 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\admin_analytics_screen.dart:360:38 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\admin_analytics_screen.dart:431:54 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:432:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:460:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:471:17 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\admin_analytics_screen.dart:527:54 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:528:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:556:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:570:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:581:17 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\admin_analytics_screen.dart:666:40 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:687:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:697:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:713:17 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\admin_analytics_screen.dart:800:58 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:818:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:829:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:840:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:854:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:866:19 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\admin_analytics_screen.dart:912:34 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\admin_analytics_screen.dart:938:35 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:1073:25 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\admin_analytics_screen.dart:1119:50 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:1149:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:1159:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\admin_analytics_screen.dart:1176:17 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\admin_analytics_screen.dart:1186:42 - deprecated_member_use
+   info - The parameter name 'sum' matches a visible type name - lib\admin_provider.dart:295:21 - avoid_types_as_parameter_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\ai_assistant_screen.dart:325:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\ai_assistant_screen.dart:532:35 - deprecated_member_use
+   info - 'fetchSignInMethodsForEmail' is deprecated and shouldn't be used. fetchSignInMethodsForEmail() has been deprecated. Migrating off of this method is recommended as a security best-practice. Learn more in the Identity Platform documentation:  https://cloud.google.com/identity-platform/docs/admin/email-enumeration-protection - lib\auth_provider.dart:134:23 - deprecated_member_use
+   info - 'fetchSignInMethodsForEmail' is deprecated and shouldn't be used. fetchSignInMethodsForEmail() has been deprecated. Migrating off of this method is recommended as a security best-practice. Learn more in the Identity Platform documentation:  https://cloud.google.com/identity-platform/docs/admin/email-enumeration-protection - lib\auth_provider.dart:254:23 - deprecated_member_use
+   info - Don't invoke 'print' in production code - lib\booking_form_screen.dart:75:5 - avoid_print
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\booking_form_screen.dart:101:40 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\booking_form_screen.dart:105:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\booking_form_screen.dart:108:23 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\booking_form_screen.dart:112:30 - use_build_context_synchronously
+   info - Use 'const' with the constructor to improve performance - lib\booking_form_screen.dart:306:37 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\create_event_screen.dart:162:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\create_event_screen.dart:233:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\create_event_screen.dart:270:29 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\create_event_screen.dart:286:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\create_event_screen.dart:301:29 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\create_event_screen.dart:320:35 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\create_event_screen.dart:340:35 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\create_event_screen.dart:361:29 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\event_detail_screen.dart:44:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\event_detail_screen.dart:140:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\event_detail_screen.dart:143:60 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\event_detail_screen.dart:273:46 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps - lib\event_proposals_screen.dart:170:60 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\event_proposals_screen.dart:214:60 - use_build_context_synchronously
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\event_proposals_screen.dart:332:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\event_proposals_screen.dart:350:48 - deprecated_member_use
+   info - Unnecessary braces in a string interpolation - lib\event_provider.dart:89:90 - unnecessary_brace_in_string_interps
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\forgot_password_screen_new.dart:76:34 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\forgot_password_screen_new.dart:88:40 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\forgot_password_screen_new.dart:151:9 - prefer_const_constructors
+warning - Unused import: 'package:google_fonts/google_fonts.dart' - lib\home_screen.dart:7:8 - unused_import
+warning - Unused import: 'package:ayojana_hub/theme/app_colors.dart' - lib\home_screen.dart:8:8 - unused_import
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\home_screen.dart:42:35 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\home_screen.dart:163:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\home_screen.dart:173:13 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\home_screen.dart:246:35 - deprecated_member_use
+   info - Use 'const' for final variables initialized to a constant value - lib\home_screen.dart:352:5 - prefer_const_declarations
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\home_screen.dart:360:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\home_screen.dart:363:51 - deprecated_member_use
+warning - Dead code - lib\home_screen.dart:368:15 - dead_code
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\home_screen.dart:406:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\home_screen.dart:448:59 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\home_screen.dart:487:12 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\home_screen.dart:489:14 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\home_screen.dart:490:19 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\home_screen.dart:492:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\home_screen.dart:493:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\home_screen.dart:502:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\home_screen.dart:503:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\home_screen.dart:512:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\home_screen.dart:513:20 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\home_screen.dart:545:22 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\home_screen.dart:548:24 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\home_screen.dart:658:35 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\home_screen.dart:670:30 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\home_screen.dart:808:30 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\home_screen.dart:957:55 - deprecated_member_use
+   info - Unnecessary use of 'toList' in a spread - lib\home_screen.dart:1162:14 - unnecessary_to_list_in_spreads
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\legacy\login_screen_old.dart:86:34 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\legacy\login_screen_old.dart:98:40 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\legacy\login_screen_old.dart:152:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\login_screen.dart:100:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\login_screen.dart:125:30 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\login_screen.dart:174:29 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\login_screen.dart:279:45 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\login_screen.dart:309:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\login_screen.dart:311:30 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\login_screen.dart:311:64 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\my_bookings_screen.dart:297:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\my_bookings_screen.dart:368:62 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\my_events_screen.dart:56:19 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\my_events_screen.dart:154:15 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\my_events_screen.dart:188:60 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\my_events_screen.dart:247:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\notification_service.dart:47:47 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\payment_screen.dart:195:44 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\payment_screen.dart:301:39 - deprecated_member_use
+   info - The constant name 'RAZORPAY_KEY_ID' isn't a lowerCamelCase identifier - lib\payment_service.dart:18:23 - constant_identifier_names
+   info - Statements in an if should be enclosed in a block - lib\profile_screen.dart:61:38 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\profile_screen.dart:61:150 - curly_braces_in_flow_control_structures
+   info - Don't use 'BuildContext's across async gaps - lib\profile_screen.dart:97:62 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\profile_screen.dart:99:62 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\profile_screen.dart:100:61 - use_build_context_synchronously
+   info - Statements in an if should be enclosed in a block - lib\profile_screen.dart:103:42 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\profile_screen.dart:103:126 - curly_braces_in_flow_control_structures
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\profile_screen.dart:105:185 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\profile_screen.dart:147:119 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\register_screen_new.dart:100:34 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\register_screen_new.dart:112:40 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\register_screen_new.dart:187:21 - prefer_const_constructors
+   info - Parameter 'key' could be a super parameter - lib\screens\home_screen.dart:5:9 - use_super_parameters
+   info - 'onBackground' is deprecated and shouldn't be used. Use onSurface instead. This feature was deprecated after v3.18.0-0.1.pre - lib\screens\home_screen.dart:148:52 - deprecated_member_use
+   info - 'onBackground' is deprecated and shouldn't be used. Use onSurface instead. This feature was deprecated after v3.18.0-0.1.pre - lib\screens\home_screen.dart:155:50 - deprecated_member_use
+   info - 'onBackground' is deprecated and shouldn't be used. Use onSurface instead. This feature was deprecated after v3.18.0-0.1.pre - lib\screens\home_screen.dart:162:50 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\home_screen.dart:178:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:191:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:212:24 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\home_screen.dart:226:9 - use_super_parameters
+   info - 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre - lib\screens\home_screen.dart:233:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:236:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:255:28 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\home_screen.dart:278:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:292:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:297:57 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:324:30 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:360:28 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:369:34 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:379:28 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:388:34 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:404:26 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:414:36 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:424:32 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\home_screen.dart:441:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter - lib\screens\home_screen.dart:468:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:481:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:486:57 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:516:24 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\home_screen.dart:530:9 - use_super_parameters
+   info - 'onBackground' is deprecated and shouldn't be used. Use onSurface instead. This feature was deprecated after v3.18.0-0.1.pre - lib\screens\home_screen.dart:541:54 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\home_screen.dart:575:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:592:58 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\home_screen.dart:627:9 - use_super_parameters
+   info - 'onBackground' is deprecated and shouldn't be used. Use onSurface instead. This feature was deprecated after v3.18.0-0.1.pre - lib\screens\home_screen.dart:641:54 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\home_screen.dart:669:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:683:56 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\home_screen.dart:720:9 - use_super_parameters
+   info - 'onBackground' is deprecated and shouldn't be used. Use onSurface instead. This feature was deprecated after v3.18.0-0.1.pre - lib\screens\home_screen.dart:734:54 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\home_screen.dart:758:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:771:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:811:30 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:824:18 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\home_screen.dart:839:9 - use_super_parameters
+   info - 'onBackground' is deprecated and shouldn't be used. Use onSurface instead. This feature was deprecated after v3.18.0-0.1.pre - lib\screens\home_screen.dart:853:54 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\home_screen.dart:877:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:890:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:919:34 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\screens\home_screen.dart:966:9 - use_super_parameters
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\splash_screen.dart:78:39 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\splash_screen.dart:96:47 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\splash_screen.dart:105:35 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\splash_screen.dart:144:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\submit_proposal_screen.dart:146:49 - deprecated_member_use
+warning - Unused import: 'app_colors.dart' - lib\theme\app_theme.dart:3:8 - unused_import
+   info - 'useMaterial3' is deprecated and shouldn't be used. Use a ThemeData constructor (.from, .light, or .dark) instead. These constructors all have a useMaterial3 argument, and they set appropriate default values based on its value. See the useMaterial3 API documentation for full details. This feature was deprecated after v3.13.0-0.2.pre - lib\theme\app_theme.dart:16:7 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:120:35 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:123:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:149:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:177:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:181:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:185:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:189:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:197:34 - prefer_const_constructors
+   info - 'MaterialStateProperty' is deprecated and shouldn't be used. Use WidgetStateProperty instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\theme\app_theme.dart:206:25 - deprecated_member_use
+   info - 'MaterialState' is deprecated and shouldn't be used. Use WidgetState instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\theme\app_theme.dart:207:31 - deprecated_member_use
+   info - 'MaterialStateProperty' is deprecated and shouldn't be used. Use WidgetStateProperty instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\theme\app_theme.dart:220:20 - deprecated_member_use
+   info - 'MaterialState' is deprecated and shouldn't be used. Use WidgetState instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\theme\app_theme.dart:221:31 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:222:20 - prefer_const_constructors
+   info - 'useMaterial3' is deprecated and shouldn't be used. Use a ThemeData constructor (.from, .light, or .dark) instead. These constructors all have a useMaterial3 argument, and they set appropriate default values based on its value. See the useMaterial3 API documentation for full details. This feature was deprecated after v3.13.0-0.2.pre - lib\theme\app_theme.dart:250:7 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:354:35 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:357:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:383:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:411:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:415:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:419:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:423:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:431:34 - prefer_const_constructors
+   info - 'MaterialStateProperty' is deprecated and shouldn't be used. Use WidgetStateProperty instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\theme\app_theme.dart:440:25 - deprecated_member_use
+   info - 'MaterialState' is deprecated and shouldn't be used. Use WidgetState instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\theme\app_theme.dart:441:31 - deprecated_member_use
+   info - 'MaterialStateProperty' is deprecated and shouldn't be used. Use WidgetStateProperty instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\theme\app_theme.dart:454:20 - deprecated_member_use
+   info - 'MaterialState' is deprecated and shouldn't be used. Use WidgetState instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\theme\app_theme.dart:455:31 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:456:20 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\auth_widgets.dart:179:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\auth_widgets.dart:322:38 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\vendor_bookings_screen.dart:109:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\vendor_bookings_screen.dart:140:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\vendor_bookings_screen.dart:150:34 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\vendor_bookings_screen.dart:157:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\vendor_bookings_screen.dart:159:34 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_bookings_screen.dart:210:63 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\vendor_bookings_screen.dart:380:34 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_bookings_screen.dart:394:62 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\vendor_bookings_screen.dart:419:15 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\vendor_bookings_screen.dart:435:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\vendor_bookings_screen.dart:484:18 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_bookings_screen.dart:512:24 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_bookings_screen.dart:514:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_dashboard_screen.dart:61:62 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_dashboard_screen.dart:92:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_dashboard_screen.dart:153:68 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_dashboard_screen.dart:195:68 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_dashboard_screen.dart:226:74 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_dashboard_screen.dart:229:76 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_dashboard_screen.dart:391:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_dashboard_screen.dart:424:44 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_dashboard_screen.dart:489:35 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_dashboard_screen.dart:501:30 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_detail_screen.dart:165:66 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_opportunities_screen.dart:177:54 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_proposals_screen.dart:191:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_proposals_screen.dart:206:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_proposals_screen.dart:222:48 - deprecated_member_use
+   info - Don't invoke 'print' in production code - lib\vendor_provider.dart:497:7 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\vendor_register_screen.dart:715:57 - deprecated_member_use
+   info - Parameter 'key' could be a super parameter - lib\widgets\gradient_background.dart:8:9 - use_super_parameters
+
