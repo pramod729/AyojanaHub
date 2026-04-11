@@ -72,6 +72,7 @@ class AyojanaHubApp extends StatelessWidget {
           '/splash': (context) => const SplashScreen(),
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegisterScreen(),
+          '/admin-register': (context) => const RegisterScreen(initialRole: 'admin'),
           '/vendor-register': (context) => const VendorRegisterScreen(),
           '/forgot-password': (context) => const ForgotPasswordScreen(),
           '/home': (context) => const HomeScreen(),

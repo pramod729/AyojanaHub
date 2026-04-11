@@ -48,7 +48,11 @@ class _LoginScreenState extends State<LoginScreen> {
         if (errorMessage == null) {
           // Login successful - check user role and navigate accordingly
           final userRole = authProvider.userModel?.role ?? 'customer';
-          final destinationRoute = userRole == 'vendor' ? '/vendor-dashboard' : '/home';
+          final destinationRoute = userRole == 'admin'
+              ? '/admin-analytics'
+              : userRole == 'vendor'
+                  ? '/vendor-dashboard'
+                  : '/home';
           
           Navigator.of(context).pushReplacementNamed(destinationRoute);
           ScaffoldMessenger.of(context).showSnackBar(
@@ -268,34 +272,51 @@ class _LoginScreenState extends State<LoginScreen> {
                             // Divider and secondary actions
                             Row(children: [Expanded(child: Divider(color: Colors.white12.withValues(alpha: 0.5))), const SizedBox(width: 12), const Text('New to Ayojana Hub?', style: TextStyle(color: Colors.white60)), const SizedBox(width: 12), Expanded(child: Divider(color: Colors.white12.withValues(alpha: 0.5)))]),
                             const SizedBox(height: 14.0),
-                            Row(
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Expanded(
-                                  child: OutlinedButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pushNamed('/register');
-                                    },
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(color: Colors.white24),
-                                      padding: const EdgeInsets.symmetric(vertical: 14.0),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: OutlinedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pushNamed('/register');
+                                        },
+                                        style: OutlinedButton.styleFrom(
+                                          side: BorderSide(color: Colors.white24),
+                                          padding: const EdgeInsets.symmetric(vertical: 14.0),
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                        ),
+                                        child: const Text('Create Account', style: TextStyle(color: Colors.white, fontSize: 14)),
+                                      ),
                                     ),
-                                    child: const Text('Create Account', style: TextStyle(color: Colors.white, fontSize: 14)),
-                                  ),
+                                    const SizedBox(width: 12.0),
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pushNamed('/vendor-register');
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.green.shade600,
+                                          padding: const EdgeInsets.symmetric(vertical: 14.0),
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                                        ),
+                                        child: const Text('Register as Vendor', style: TextStyle(color: Colors.white, fontSize: 14)),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(width: 12.0),
-                                Expanded(
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pushNamed('/vendor-register');
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.green.shade600,
-                                      padding: const EdgeInsets.symmetric(vertical: 14.0),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                                    ),
-                                    child: const Text('Register as Vendor', style: TextStyle(color: Colors.white, fontSize: 14)),
+                                const SizedBox(height: 12.0),
+                                OutlinedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pushNamed('/admin-register');
+                                  },
+                                  style: OutlinedButton.styleFrom(
+                                    side: const BorderSide(color: Colors.white24),
+                                    padding: const EdgeInsets.symmetric(vertical: 14.0),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                                   ),
+                                  child: const Text('Register as Admin', style: TextStyle(color: Colors.white, fontSize: 14)),
                                 ),
                               ],
                             ),

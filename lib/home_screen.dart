@@ -4,8 +4,6 @@ import 'package:ayojana_hub/my_bookings_screen.dart';
 import 'package:ayojana_hub/my_events_screen.dart';
 import 'package:ayojana_hub/profile_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:ayojana_hub/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -349,7 +347,6 @@ class UpcomingEventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: Connect to event provider to get actual upcoming event
-    final hasUpcomingEvent = false; // Replace with actual event check
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -364,82 +361,7 @@ class UpcomingEventCard extends StatelessWidget {
             width: 1.5,
           ),
         ),
-        child: hasUpcomingEvent
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.event_available,
-                        color: Theme.of(context).primaryColor,
-                        size: 28,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Your Wedding Day',
-                              style:
-                                  Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'March 15, 2024 • 50 Guests',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).textTheme.bodySmall?.color,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'Confirmed',
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: Colors.green,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () =>
-                              Navigator.pushNamed(context, '/my-events'),
-                          icon: const Icon(Icons.edit, size: 18),
-                          label: const Text('View Event'),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.checklist, size: 18),
-                          label: const Text('Checklist'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            : Column(
+        child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Icon(

@@ -13,13 +13,18 @@ class VendorDashboardScreen extends StatefulWidget {
 class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final accent = theme.primaryColor;
+    final cardColor = theme.cardColor;
+    final textColor = theme.textTheme.bodyLarge?.color ?? Colors.white;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Vendor Dashboard'),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         actions: [
           IconButton(
             onPressed: () => Navigator.of(context).pushNamed('/profile'),
@@ -42,7 +47,7 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Container(
-                  color: Colors.white,
+                  color: cardColor,
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     children: [
@@ -50,15 +55,11 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                         width: 80,
                         height: 80,
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF4F46E5), Color(0xFF6366F1)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                          color: accent,
                           borderRadius: BorderRadius.circular(40),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF4F46E5).withOpacity(0.3),
+                              color: accent.withOpacity(0.25),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -78,10 +79,9 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                       const SizedBox(height: 16),
                       Text(
                         user.businessName ?? user.name,
-                        style: const TextStyle(
-                          fontSize: 24,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          color: textColor,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1F2937),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -89,15 +89,14 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF4F46E5).withOpacity(0.1),
+                          color: accent.withOpacity(0.14),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           user.vendorCategory ?? 'Vendor',
-                          style: const TextStyle(
-                            color: Color(0xFF4F46E5),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: accent,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
@@ -110,12 +109,11 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Business Info',
-                        style: TextStyle(
-                          fontSize: 20,
+                        style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1F2937),
+                          color: textColor,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -150,22 +148,21 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                                   width: 40,
                                   height: 40,
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF4F46E5).withOpacity(0.1),
+                                    color: accent.withOpacity(0.14),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.description_outlined,
-                                    color: Color(0xFF4F46E5),
+                                    color: accent,
                                     size: 20,
                                   ),
                                 ),
                                 const SizedBox(width: 12),
-                                const Text(
+                                Text(
                                   'Description',
-                                  style: TextStyle(
+                                  style: theme.textTheme.bodySmall?.copyWith(
                                     fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                    color: Color(0xFF6B7280),
+                                    color: theme.textTheme.bodyMedium?.color,
                                   ),
                                 ),
                               ],
@@ -173,9 +170,8 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                             const SizedBox(height: 12),
                             Text(
                               user.vendorDescription!,
-                              style: const TextStyle(
-                                color: Color(0xFF1F2937),
-                                fontSize: 14,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: textColor,
                                 height: 1.5,
                               ),
                             ),
@@ -192,22 +188,21 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                                   width: 40,
                                   height: 40,
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF4F46E5).withOpacity(0.1),
+                                    color: accent.withOpacity(0.14),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.stars_outlined,
-                                    color: Color(0xFF4F46E5),
+                                    color: accent,
                                     size: 20,
                                   ),
                                 ),
                                 const SizedBox(width: 12),
-                                const Text(
+                                Text(
                                   'Services',
-                                  style: TextStyle(
+                                  style: theme.textTheme.bodySmall?.copyWith(
                                     fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                    color: Color(0xFF6B7280),
+                                    color: theme.textTheme.bodyMedium?.color,
                                   ),
                                 ),
                               ],
@@ -223,18 +218,17 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                                           vertical: 6,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFF4F46E5).withOpacity(0.1),
+                                          color: accent.withOpacity(0.14),
                                           borderRadius: BorderRadius.circular(20),
                                           border: Border.all(
-                                            color: const Color(0xFF4F46E5).withOpacity(0.2),
+                                            color: accent.withOpacity(0.22),
                                           ),
                                         ),
                                         child: Text(
                                           service,
-                                          style: const TextStyle(
-                                            color: Color(0xFF4F46E5),
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            color: accent,
                                             fontWeight: FontWeight.w500,
-                                            fontSize: 13,
                                           ),
                                         ),
                                       ))
@@ -244,12 +238,11 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                         ),
                       ],
                       const SizedBox(height: 24),
-                      const Text(
+                      Text(
                         'Quick Actions',
-                        style: TextStyle(
-                          fontSize: 20,
+                        style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1F2937),
+                          color: textColor,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -381,14 +374,15 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.12),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -415,18 +409,22 @@ class _InfoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final accent = theme.primaryColor;
+    final textColor = theme.textTheme.bodyLarge?.color ?? Colors.white;
+
     return Row(
       children: [
         Container(
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: const Color(0xFF4F46E5).withOpacity(0.1),
+            color: accent.withOpacity(0.14),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(
             icon,
-            color: const Color(0xFF4F46E5),
+            color: accent,
             size: 20,
           ),
         ),
@@ -437,19 +435,17 @@ class _InfoItem extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: const TextStyle(
+                style: theme.textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.w600,
-                  fontSize: 12,
-                  color: Color(0xFF6B7280),
+                  color: theme.textTheme.bodyMedium?.color,
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 value,
-                style: const TextStyle(
-                  fontSize: 14,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: textColor,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF1F2937),
                 ),
               ),
             ],
@@ -475,18 +471,21 @@ class _ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textColor = theme.textTheme.bodyLarge?.color ?? Colors.white;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.cardColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFE5E7EB)),
+          border: Border.all(color: theme.dividerColor),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withOpacity(0.08),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -498,7 +497,7 @@ class _ActionButton extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withOpacity(0.14),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
@@ -511,17 +510,16 @@ class _ActionButton extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(
-                  color: Color(0xFF1F2937),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: textColor,
                   fontWeight: FontWeight.w600,
-                  fontSize: 16,
                 ),
               ),
             ),
             Icon(
               Icons.arrow_forward_ios,
               size: 16,
-              color: Colors.grey[400],
+              color: theme.textTheme.bodySmall?.color?.withOpacity(0.75),
             ),
           ],
         ),

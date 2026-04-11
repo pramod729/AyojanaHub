@@ -20,6 +20,9 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _searchQuery = '';
+  String _selectedRoleFilter = 'all'; // all, vendor, customer
+  String _selectedActivityTypeFilter = 'all'; // all, authentication, event, booking, etc.
+  DateTimeRange? _selectedDateRange;
 
   @override
   void initState() {
@@ -1044,12 +1047,46 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
         return const Center(child: CircularProgressIndicator());
       }
 
-      final activities = _searchQuery.isEmpty
-          ? provider.activityLogs
-          : provider.searchActivityLogs(_searchQuery);
+      // Apply all filters
+      List<ActivityLog> activities = provider.activityLogs;
+
+      // Apply role filter
+      if (_selectedRoleFilter != 'all') {
+        activities = activities
+            .where((log) => log.userRole == _selectedRoleFilter)
+            .toList();
+      }
+
+      // Apply activity type filter
+      if (_selectedActivityTypeFilter != 'all') {
+        activities = activities
+            .where((log) => log.activityType == _selectedActivityTypeFilter)
+            .toList();
+      }
+
+      // Apply date range filter
+      if (_selectedDateRange != null) {
+        activities = activities
+            .where((log) =>
+                log.timestamp.isAfter(_selectedDateRange!.start) &&
+                log.timestamp.isBefore(_selectedDateRange!.end))
+            .toList();
+      }
+
+      // Apply search filter
+      if (_searchQuery.isNotEmpty) {
+        final lowerQuery = _searchQuery.toLowerCase();
+        activities = activities
+            .where((log) =>
+                log.activityTitle.toLowerCase().contains(lowerQuery) ||
+                log.description.toLowerCase().contains(lowerQuery) ||
+                log.userName.toLowerCase().contains(lowerQuery))
+            .toList();
+      }
 
       return Column(
         children: [
+          // Search bar
           Padding(
             padding: const EdgeInsets.all(16),
             child: TextField(
@@ -1064,6 +1101,84 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
               ),
             ),
           ),
+          // Filter chips
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildFilterChip(
+                    label: 'Role',
+                    value: _selectedRoleFilter == 'all' ? 'All' : _selectedRoleFilter.toUpperCase(),
+                    onTap: () => _showRoleFilterDialog(context),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildFilterChip(
+                    label: 'Type',
+                    value: _selectedActivityTypeFilter == 'all'
+                        ? 'All'
+                        : _selectedActivityTypeFilter.toUpperCase(),
+                    onTap: () => _showActivityTypeFilterDialog(context),
+                  ),
+                  const SizedBox(width: 8),
+                  _buildFilterChip(
+                    label: 'Date',
+                    value: _selectedDateRange == null
+                        ? 'All'
+                        : 'Custom',
+                    onTap: () => _showDateRangePickerDialog(context),
+                  ),
+                  if (_selectedRoleFilter != 'all' ||
+                      _selectedActivityTypeFilter != 'all' ||
+                      _selectedDateRange != null ||
+                      _searchQuery.isNotEmpty) ...[
+                    const SizedBox(width: 8),
+                    FilterChip(
+                      label: const Text('Clear'),
+                      onSelected: (value) {
+                        setState(() {
+                          _selectedRoleFilter = 'all';
+                          _selectedActivityTypeFilter = 'all';
+                          _selectedDateRange = null;
+                          _searchQuery = '';
+                        });
+                      },
+                      backgroundColor: AppColors.error.withOpacity(0.2),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Activity stats
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildActivityStatCard(
+                    'Vendor Activities',
+                    provider.getActivityLogsByRole('vendor').length.toString(),
+                    Icons.storefront,
+                    AppColors.primary,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildActivityStatCard(
+                    'Customer Activities',
+                    provider.getActivityLogsByRole('customer').length.toString(),
+                    Icons.person,
+                    AppColors.success,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Activities list
           Expanded(
             child: activities.isEmpty
                 ? Center(
@@ -1077,7 +1192,10 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          _searchQuery.isEmpty
+                          _searchQuery.isEmpty &&
+                                  _selectedRoleFilter == 'all' &&
+                                  _selectedActivityTypeFilter == 'all' &&
+                                  _selectedDateRange == null
                               ? 'No activities yet'
                               : 'No activities found',
                           style: Theme.of(context).textTheme.bodyLarge,
@@ -1092,7 +1210,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
                       itemCount: activities.length,
                       itemBuilder: (context, index) {
                         final activity = activities[index];
-                        return _activityCard(activity, context);
+                        return _activityCard(activity, context, provider);
                       },
                     ),
                   ),
@@ -1102,7 +1220,140 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
     });
   }
 
-  Widget _activityCard(ActivityLog activity, BuildContext context) {
+  Widget _buildFilterChip({
+    required String label,
+    required String value,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Chip(
+        label: Text('$label: $value'),
+        backgroundColor: AppColors.primary.withOpacity(0.1),
+        labelStyle: const TextStyle(color: AppColors.primary),
+      ),
+    );
+  }
+
+  Widget _buildActivityStatCard(
+    String title,
+    String count,
+    IconData icon,
+    Color color,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 8),
+          Text(
+            count,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 12),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRoleFilterDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Filter by Role'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildRadioOption('All', 'all'),
+            _buildRadioOption('Vendor', 'vendor'),
+            _buildRadioOption('Customer', 'customer'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRadioOption(String label, String value) {
+    return RadioListTile(
+      title: Text(label),
+      value: value,
+      groupValue: _selectedRoleFilter,
+      onChanged: (val) {
+        setState(() => _selectedRoleFilter = val ?? 'all');
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  void _showActivityTypeFilterDialog(BuildContext context) {
+    final activityTypes = [
+      'all',
+      'authentication',
+      'event',
+      'booking',
+      'payment',
+      'vendor',
+      'chat',
+      'admin'
+    ];
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Filter by Activity Type'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: activityTypes
+              .map((type) => RadioListTile(
+                    title: Text(type == 'all' ? 'All' : type.toUpperCase()),
+                    value: type,
+                    groupValue: _selectedActivityTypeFilter,
+                    onChanged: (val) {
+                      setState(() => _selectedActivityTypeFilter = val ?? 'all');
+                      Navigator.pop(context);
+                    },
+                  ))
+              .toList(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDateRangePickerDialog(BuildContext context) async {
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      initialDateRange: _selectedDateRange,
+    );
+    if (picked != null) {
+      setState(() => _selectedDateRange = picked);
+    }
+  }
+
+  Widget _activityCard(ActivityLog activity, BuildContext context, AdminProvider provider) {
     final Color activityColor = _getActivityTypeColor(activity.activityType);
 
     return Card(
@@ -1229,8 +1480,192 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
                     ),
                   ),
             ],
+            const SizedBox(height: 12),
+            _divider(),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton.icon(
+                  onPressed: () => _showActivityDetailsDialog(context, activity),
+                  icon: const Icon(Icons.info_outline),
+                  label: const Text('Details'),
+                ),
+                const SizedBox(width: 8),
+                if (activity.userRole == 'vendor')
+                  TextButton.icon(
+                    onPressed: () => _showVendorSummary(context, provider, activity.userId),
+                    icon: const Icon(Icons.analytics),
+                    label: const Text('Summary'),
+                  )
+                else if (activity.userRole == 'customer')
+                  TextButton.icon(
+                    onPressed: () => _showCustomerSummary(context, provider, activity.userId),
+                    icon: const Icon(Icons.analytics),
+                    label: const Text('Summary'),
+                  ),
+              ],
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showActivityDetailsDialog(BuildContext context, ActivityLog activity) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Activity Details'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _detailRow('Title', activity.activityTitle),
+              _detailRow('Description', activity.description),
+              _detailRow('User', activity.userName),
+              _detailRow('Email', activity.userEmail),
+              _detailRow('Role', activity.userRole),
+              _detailRow('Activity Type', activity.activityType),
+              _detailRow('Timestamp', DateFormat('MMM dd, yyyy HH:mm:ss').format(activity.timestamp)),
+              if (activity.relatedId != null)
+                _detailRow('Related ID', activity.relatedId!),
+              if (activity.relatedType != null)
+                _detailRow('Related Type', activity.relatedType!),
+              if (activity.metadata != null)
+                ..._buildMetadataRows(activity.metadata!),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _detailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 13),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildMetadataRows(Map<String, dynamic> metadata) {
+    return metadata.entries
+        .map((e) => _detailRow(e.key, e.value.toString()))
+        .toList();
+  }
+
+  void _showVendorSummary(BuildContext context, AdminProvider provider, String vendorId) {
+    final summary = provider.getVendorActivitySummary(vendorId);
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Vendor Activity Summary'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _detailRow('Total Activities', summary['totalActivities'].toString()),
+              _detailRow('Activity Types', summary['activityTypes'].toString()),
+              _detailRow(
+                'Last Activity',
+                summary['recentActivity'] != null
+                    ? DateFormat('MMM dd, yyyy HH:mm').format(summary['recentActivity'])
+                    : 'N/A',
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Recent Activities',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              ...((summary['activities'] as List<ActivityLog>).take(5).map(
+                    (activity) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Text(
+                        '• ${activity.activityTitle}',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  )),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showCustomerSummary(BuildContext context, AdminProvider provider, String customerId) {
+    final summary = provider.getCustomerActivitySummary(customerId);
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Customer Activity Summary'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _detailRow('Total Activities', summary['totalActivities'].toString()),
+              _detailRow('Activity Types', summary['activityTypes'].toString()),
+              _detailRow(
+                'Last Activity',
+                summary['recentActivity'] != null
+                    ? DateFormat('MMM dd, yyyy HH:mm').format(summary['recentActivity'])
+                    : 'N/A',
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Recent Activities',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              ...((summary['activities'] as List<ActivityLog>).take(5).map(
+                    (activity) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Text(
+                        '• ${activity.activityTitle}',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  )),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
       ),
     );
   }

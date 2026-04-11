@@ -143,6 +143,120 @@ class AdminProvider with ChangeNotifier {
         .toList();
   }
 
+  /// Get activity logs filtered by user role (vendor or customer)
+  List<ActivityLog> getActivityLogsByRole(String userRole) {
+    return _activityLogs.where((log) => log.userRole == userRole).toList();
+  }
+
+  /// Get all vendor activities
+  List<ActivityLog> getVendorActivities() {
+    return getActivityLogsByRole('vendor');
+  }
+
+  /// Get all customer activities
+  List<ActivityLog> getCustomerActivities() {
+    return getActivityLogsByRole('customer');
+  }
+
+  /// Get activities for a specific activity type (booking, event, vendor, etc.)
+  List<ActivityLog> getActivityLogsByActivityType(String activityType) {
+    return _activityLogs
+        .where((log) => log.activityType == activityType)
+        .toList();
+  }
+
+  /// Get activity logs within a date range
+  List<ActivityLog> getActivitiesByDateRange(DateTime startDate, DateTime endDate) {
+    return _activityLogs
+        .where((log) =>
+            log.timestamp.isAfter(startDate) &&
+            log.timestamp.isBefore(endDate))
+        .toList();
+  }
+
+  /// Get recent activities (last N hours)
+  List<ActivityLog> getRecentActivities({int hoursAgo = 24}) {
+    final cutoffDate = DateTime.now().subtract(Duration(hours: hoursAgo));
+    return _activityLogs
+        .where((log) => log.timestamp.isAfter(cutoffDate))
+        .toList();
+  }
+
+  /// Get activity logs for a specific related entity (event, booking, vendor, etc.)
+  List<ActivityLog> getActivityLogsForEntity(String relatedId) {
+    return _activityLogs.where((log) => log.relatedId == relatedId).toList();
+  }
+
+  /// Get activities filtered by type and role
+  List<ActivityLog> getActivitiesByTypeAndRole(String activityType, String userRole) {
+    return _activityLogs
+        .where((log) =>
+            log.activityType == activityType && log.userRole == userRole)
+        .toList();
+  }
+
+  /// Get activity statistics by type
+  Map<String, int> getActivityStatsByType() {
+    final stats = <String, int>{};
+    for (var log in _activityLogs) {
+      stats[log.activityType] = (stats[log.activityType] ?? 0) + 1;
+    }
+    return stats;
+  }
+
+  /// Get activity statistics by user role
+  Map<String, int> getActivityStatsByRole() {
+    final stats = <String, int>{};
+    for (var log in _activityLogs) {
+      stats[log.userRole] = (stats[log.userRole] ?? 0) + 1;
+    }
+    return stats;
+  }
+
+  /// Get top active users
+  List<MapEntry<String, int>> getTopActiveUsers({int limit = 10}) {
+    final userActivity = <String, int>{};
+    for (var log in _activityLogs) {
+      final key = log.userName;
+      userActivity[key] = (userActivity[key] ?? 0) + 1;
+    }
+    final sorted = userActivity.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    return sorted.take(limit).toList();
+  }
+
+  /// Count activities by a specific criteria
+  int countActivitiesByType(String activityType) {
+    return _activityLogs.where((log) => log.activityType == activityType).length;
+  }
+
+  /// Count activities by role
+  int countActivitiesByRole(String userRole) {
+    return _activityLogs.where((log) => log.userRole == userRole).length;
+  }
+
+  /// Get vendor-specific activity summary
+  Map<String, dynamic> getVendorActivitySummary(String vendorId) {
+    final activities = _activityLogs.where((log) => log.userId == vendorId).toList();
+    return {
+      'totalActivities': activities.length,
+      'recentActivity': activities.isNotEmpty ? activities.first.timestamp : null,
+      'activityTypes': activities.map((a) => a.activityType).toSet().length,
+      'activities': activities,
+    };
+  }
+
+  /// Get customer-specific activity summary
+  Map<String, dynamic> getCustomerActivitySummary(String customerId) {
+    final activities = _activityLogs.where((log) => log.userId == customerId).toList();
+    return {
+      'totalActivities': activities.length,
+      'recentActivity': activities.isNotEmpty ? activities.first.timestamp : null,
+      'activityTypes': activities.map((a) => a.activityType).toSet().length,
+      'activities': activities,
+    };
+  }
+
   Future<bool> deleteUser(String userId) async {
     try {
       await _firestore.collection('users').doc(userId).delete();

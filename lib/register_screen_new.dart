@@ -7,25 +7,29 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  const RegisterScreen({super.key, this.initialRole = 'customer'});
+
+  final String initialRole;
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProviderStateMixin {
+class _RegisterScreenState extends State<RegisterScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+  var _role = 'user';
+
   bool _agreedToTerms = false;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   final FocusNode _nameFocus = FocusNode();
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _phoneFocus = FocusNode();
@@ -35,19 +39,25 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
   @override
   void initState() {
     super.initState();
+    _role = widget.initialRole == 'admin' ? 'admin' : 'user';
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-    
+
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: const Interval(0.0, 0.5, curve: Curves.easeOut)),
+      CurvedAnimation(
+          parent: _animationController,
+          curve: const Interval(0.0, 0.5, curve: Curves.easeOut)),
     );
-    
-    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
-      CurvedAnimation(parent: _animationController, curve: const Interval(0.1, 0.7, curve: Curves.easeOut)),
+
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
+      CurvedAnimation(
+          parent: _animationController,
+          curve: const Interval(0.1, 0.7, curve: Curves.easeOut)),
     );
-    
+
     _animationController.forward();
   }
 
@@ -83,6 +93,7 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
       email: _emailController.text.trim(),
       phone: _phoneController.text.trim(),
       password: _passwordController.text,
+      role: _role,
     );
 
     if (!mounted) return;
@@ -112,7 +123,8 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
                 color: AppColors.error.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(AppDimensions.radiusM),
               ),
-              child: const Icon(Icons.error_outline_rounded, color: AppColors.error),
+              child: const Icon(Icons.error_outline_rounded,
+                  color: AppColors.error),
             ),
             const SizedBox(width: 12),
             const Expanded(
@@ -185,8 +197,10 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
                   children: [
                     // Header with Back Button
                     AuthPageHeader(
-                      title: 'Create Account',
-                      subtitle: 'Join AyojanaHub to start planning amazing events',
+                      title: widget.initialRole == 'admin' ? 'Create Admin Account' : 'Create Account',
+                      subtitle: widget.initialRole == 'admin'
+                          ? 'Register the admin account for app management'
+                          : 'Join AyojanaHub to start planning amazing events',
                       showBackButton: true,
                     ),
                     const SizedBox(height: AppDimensions.paddingXL),
@@ -239,7 +253,8 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
                               if (value == null || value.isEmpty) {
                                 return 'Email is required';
                               }
-                              if (!value.contains('@') || !value.contains('.')) {
+                              if (!value.contains('@') ||
+                                  !value.contains('.')) {
                                 return 'Please enter a valid email';
                               }
                               return null;
@@ -257,13 +272,15 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
                             keyboardType: TextInputType.phone,
                             textInputAction: TextInputAction.next,
                             onFieldSubmitted: (_) {
-                              FocusScope.of(context).requestFocus(_passwordFocus);
+                              FocusScope.of(context)
+                                  .requestFocus(_passwordFocus);
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Phone number is required';
                               }
-                              final digitsOnly = value.replaceAll(RegExp(r'[^\d]'), '');
+                              final digitsOnly =
+                                  value.replaceAll(RegExp(r'[^\d]'), '');
                               if (digitsOnly.length < 10) {
                                 return 'Phone number must have at least 10 digits';
                               }
@@ -283,7 +300,8 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
                             suffixIcon: Icons.visibility_off_rounded,
                             textInputAction: TextInputAction.next,
                             onFieldSubmitted: (_) {
-                              FocusScope.of(context).requestFocus(_confirmPasswordFocus);
+                              FocusScope.of(context)
+                                  .requestFocus(_confirmPasswordFocus);
                             },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
