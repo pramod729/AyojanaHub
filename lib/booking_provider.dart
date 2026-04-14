@@ -76,6 +76,31 @@ class BookingProvider with ChangeNotifier {
     }
   }
 
+  Future<String?> updateBooking(BookingModel booking) async {
+    try {
+      await _firestore.collection('bookings').doc(booking.id).update(booking.toMap());
+      final bookingIndex = _bookings.indexWhere((b) => b.id == booking.id);
+      if (bookingIndex != -1) {
+        _bookings[bookingIndex] = booking;
+        notifyListeners();
+      }
+      return null;
+    } catch (e) {
+      return 'Failed to update booking: $e';
+    }
+  }
+
+  Future<String?> deleteBooking(String bookingId) async {
+    try {
+      await _firestore.collection('bookings').doc(bookingId).delete();
+      _bookings.removeWhere((b) => b.id == bookingId);
+      notifyListeners();
+      return null;
+    } catch (e) {
+      return 'Failed to delete booking: $e';
+    }
+  }
+
   Future<String?> updateBookingStatus(String bookingId, String status) async {
     try {
       await _firestore.collection('bookings').doc(bookingId).update({

@@ -306,18 +306,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 12.0),
-                                OutlinedButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pushNamed('/admin-register');
-                                  },
-                                  style: OutlinedButton.styleFrom(
-                                    side: const BorderSide(color: Colors.white24),
-                                    padding: const EdgeInsets.symmetric(vertical: 14.0),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-                                  ),
-                                  child: const Text('Register as Admin', style: TextStyle(color: Colors.white, fontSize: 14)),
-                                ),
                               ],
                             ),
                           ],

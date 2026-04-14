@@ -407,6 +407,28 @@ class VendorProvider with ChangeNotifier {
     }
   }
 
+  Future<VendorModel?> getVendorById(String vendorId) async {
+    try {
+      final doc = await _firestore.collection('vendors').doc(vendorId).get();
+      if (doc.exists) {
+        return VendorModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<String?> updateVendor(VendorModel vendor) async {
+    try {
+      await _firestore.collection('vendors').doc(vendor.id).update(vendor.toMap());
+      await loadVendors();
+      return null;
+    } catch (e) {
+      return 'Failed to update vendor: $e';
+    }
+  }
+
   Future<String?> updateVendorProfileFromUser({
     required String userId,
     required String businessName,

@@ -116,6 +116,39 @@ class AdminProvider with ChangeNotifier {
     }
   }
 
+  Future<bool> createUser(UserModel user) async {
+    try {
+      final docRef = await _firestore.collection('users').add(user.toMap());
+      final newUser = UserModel(
+        id: docRef.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        profileImage: user.profileImage,
+        createdAt: user.createdAt,
+        vendorCategory: user.vendorCategory,
+        vendorDescription: user.vendorDescription,
+        vendorLocation: user.vendorLocation,
+        vendorServices: user.vendorServices,
+        businessName: user.businessName,
+      );
+
+      _allUsers.add(newUser);
+      _totalUsers++;
+      if (newUser.role == 'vendor') {
+        _allVendors.add(newUser);
+        _vendorSignups++;
+      }
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
   List<ActivityLog> getActivityLogsByType(String activityType) {
     return _activityLogs
         .where((log) => log.activityType == activityType)
@@ -259,13 +292,21 @@ class AdminProvider with ChangeNotifier {
 
   Future<bool> deleteUser(String userId) async {
     try {
+      final existingUserIndex = _allUsers.indexWhere((u) => u.id == userId);
+      final existingUser = existingUserIndex != -1 ? _allUsers[existingUserIndex] : null;
+
       await _firestore.collection('users').doc(userId).delete();
-      _allUsers.removeWhere((u) => u.id == userId);
-      if (_allUsers.any((u) => u.id == userId && u.role == 'vendor')) {
-        _allVendors.removeWhere((v) => v.id == userId);
-        _vendorSignups--;
+
+      if (existingUserIndex != -1) {
+        _allUsers.removeAt(existingUserIndex);
+        if (_totalUsers > 0) _totalUsers--;
+
+        if (existingUser?.role == 'vendor') {
+          _allVendors.removeWhere((v) => v.id == userId);
+          if (_vendorSignups > 0) _vendorSignups--;
+        }
       }
-      _totalUsers--;
+
       notifyListeners();
       return true;
     } catch (e) {
@@ -277,11 +318,21 @@ class AdminProvider with ChangeNotifier {
 
   Future<bool> updateUserRole(String userId, String newRole) async {
     try {
-      await _firestore.collection('users').doc(userId).update({'role': newRole});
       final userIndex = _allUsers.indexWhere((u) => u.id == userId);
-      if (userIndex != -1) {
-        final user = _allUsers[userIndex];
-        _allUsers[userIndex] = UserModel(
+      if (userIndex == -1) {
+        _error = 'User not found';
+        notifyListeners();
+        return false;
+      }
+
+      final user = _allUsers[userIndex];
+      await _firestore.collection('users').doc(userId).update({'role': newRole});
+
+      if (user.role == 'vendor' && newRole != 'vendor') {
+        _allVendors.removeWhere((v) => v.id == userId);
+        if (_vendorSignups > 0) _vendorSignups--;
+      } else if (user.role != 'vendor' && newRole == 'vendor') {
+        _allVendors.add(UserModel(
           id: user.id,
           name: user.name,
           email: user.email,
@@ -294,8 +345,25 @@ class AdminProvider with ChangeNotifier {
           vendorLocation: user.vendorLocation,
           vendorServices: user.vendorServices,
           businessName: user.businessName,
-        );
+        ));
+        _vendorSignups++;
       }
+
+      _allUsers[userIndex] = UserModel(
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: newRole,
+        profileImage: user.profileImage,
+        createdAt: user.createdAt,
+        vendorCategory: user.vendorCategory,
+        vendorDescription: user.vendorDescription,
+        vendorLocation: user.vendorLocation,
+        vendorServices: user.vendorServices,
+        businessName: user.businessName,
+      );
+
       notifyListeners();
       return true;
     } catch (e) {
@@ -346,11 +414,82 @@ class AdminProvider with ChangeNotifier {
     }
   }
 
+  Future<bool> updateUser(UserModel user) async {
+    try {
+      final currentIndex = _allUsers.indexWhere((u) => u.id == user.id);
+      final currentUser = currentIndex != -1 ? _allUsers[currentIndex] : null;
+
+      await _firestore.collection('users').doc(user.id).update(user.toMap());
+
+      if (currentIndex != -1) {
+        _allUsers[currentIndex] = user;
+      }
+
+      if (currentUser != null) {
+        if (currentUser.role == 'vendor' && user.role != 'vendor') {
+          _allVendors.removeWhere((v) => v.id == user.id);
+          if (_vendorSignups > 0) {
+            _vendorSignups--;
+          }
+        } else if (currentUser.role != 'vendor' && user.role == 'vendor') {
+          if (!_allVendors.any((v) => v.id == user.id)) {
+            _allVendors.add(user);
+            _vendorSignups++;
+          }
+        }
+      } else if (user.role == 'vendor' && !_allVendors.any((v) => v.id == user.id)) {
+        _allVendors.add(user);
+        _vendorSignups++;
+      }
+
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> updateEvent(String eventId, Map<String, dynamic> data) async {
+    try {
+      await _firestore.collection('events').doc(eventId).update(data);
+      final eventIndex = _allEvents.indexWhere((e) => e.id == eventId);
+      if (eventIndex != -1) {
+        final existing = _allEvents[eventIndex];
+        final mergedData = {...existing.toMap(), ...data};
+
+        if (mergedData['eventDate'] is DateTime) {
+          mergedData['eventDate'] = Timestamp.fromDate(mergedData['eventDate'] as DateTime);
+        }
+
+        _allEvents[eventIndex] = EventModel.fromMap(mergedData, eventId);
+      }
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
   Future<bool> deleteBooking(String bookingId) async {
     try {
+      final bookingIndex = _allBookings.indexWhere((b) => b.id == bookingId);
+      final booking = bookingIndex != -1 ? _allBookings[bookingIndex] : null;
+
       await _firestore.collection('bookings').doc(bookingId).delete();
-      _allBookings.removeWhere((b) => b.id == bookingId);
-      _totalBookings--;
+
+      if (bookingIndex != -1) {
+        _allBookings.removeAt(bookingIndex);
+        if (_totalBookings > 0) _totalBookings--;
+        if (booking?.paymentStatus == 'completed' && _completedBookings > 0) {
+          _completedBookings--;
+          _totalRevenue = (_totalRevenue - (booking?.price ?? 0)).clamp(0.0, double.infinity);
+        }
+      }
+
       notifyListeners();
       return true;
     } catch (e) {
@@ -362,9 +501,14 @@ class AdminProvider with ChangeNotifier {
 
   Future<bool> deleteEvent(String eventId) async {
     try {
+      final eventIndex = _allEvents.indexWhere((e) => e.id == eventId);
       await _firestore.collection('events').doc(eventId).delete();
-      _allEvents.removeWhere((e) => e.id == eventId);
-      _totalEvents--;
+
+      if (eventIndex != -1) {
+        _allEvents.removeAt(eventIndex);
+        if (_totalEvents > 0) _totalEvents--;
+      }
+
       notifyListeners();
       return true;
     } catch (e) {

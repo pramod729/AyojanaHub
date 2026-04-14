@@ -24,6 +24,9 @@ import 'package:ayojana_hub/vendor_opportunities_screen.dart';
 import 'package:ayojana_hub/vendor_proposals_screen.dart';
 import 'package:ayojana_hub/vendor_provider.dart';
 import 'package:ayojana_hub/vendor_register_screen.dart';
+import 'package:ayojana_hub/notifications_screen.dart';
+import 'package:ayojana_hub/help_support_screen.dart';
+import 'package:ayojana_hub/about_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -67,12 +70,11 @@ class AyojanaHubApp extends StatelessWidget {
         theme: AppTheme.darkTheme(),
         darkTheme: AppTheme.darkTheme(),
         themeMode: ThemeMode.dark,
-        home: const LoginScreen(),
+        home: const SplashScreen(),
         routes: {
           '/splash': (context) => const SplashScreen(),
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegisterScreen(),
-          '/admin-register': (context) => const RegisterScreen(initialRole: 'admin'),
           '/vendor-register': (context) => const VendorRegisterScreen(),
           '/forgot-password': (context) => const ForgotPasswordScreen(),
           '/home': (context) => const HomeScreen(),
@@ -84,6 +86,9 @@ class AyojanaHubApp extends StatelessWidget {
           '/vendor-proposals': (context) => const VendorProposalsScreen(),
           '/my-bookings': (context) => const MyBookingsScreen(),
           '/profile': (context) => const ProfileScreen(),
+          '/notifications': (context) => const NotificationsScreen(),
+          '/help-support': (context) => const HelpSupportScreen(),
+          '/about': (context) => const AboutScreen(),
           '/admin-analytics': (context) => const AdminAnalyticsScreen(),
           '/ai-assistant': (context) => const AIAssistantScreen(),
         },

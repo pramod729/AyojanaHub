@@ -41,15 +41,30 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _navigateToNextScreen() async {
-    await Future.delayed(const Duration(seconds: 3));
+    // Wait for initial auth state to be determined
+    await Future.delayed(const Duration(milliseconds: 500));
 
     if (!mounted) return;
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
+    // If user is authenticated, wait for user data to load
     if (authProvider.isAuthenticated) {
-      final userRole = authProvider.userModel?.role;
-      if (userRole == 'vendor') {
+      // Wait up to 3 seconds for user data to load
+      int attempts = 0;
+      while (authProvider.userModel == null && attempts < 30) {
+        await Future.delayed(const Duration(milliseconds: 100));
+        attempts++;
+      }
+    }
+
+    if (!mounted) return;
+
+    if (authProvider.isAuthenticated) {
+      final userRole = authProvider.userModel?.role ?? 'customer';
+      if (userRole == 'admin') {
+        Navigator.pushReplacementNamed(context, '/admin-analytics');
+      } else if (userRole == 'vendor') {
         Navigator.pushReplacementNamed(context, '/vendor-dashboard');
       } else {
         Navigator.pushReplacementNamed(context, '/home');
