@@ -1,3 +1,4 @@
+import 'package:ayojana_hub/activity_service.dart';
 import 'package:ayojana_hub/auth_provider.dart';
 import 'package:ayojana_hub/vendor_provider.dart';
 import 'package:flutter/material.dart';
@@ -247,6 +248,23 @@ class _VendorRegisterScreenState extends State<VendorRegisterScreen> {
           _showErrorDialog('Vendor creation failed', vendorCreationError);
           setState(() => _isLoading = false);
           return;
+        }
+
+        // Log vendor registration activity
+        final userModel = authProvider.userModel;
+        if (userModel != null) {
+          await ActivityService().logVendorActivity(
+            userModel,
+            action: 'profile_update',
+            vendorId: userId,
+            vendorName: _businessNameController.text.trim(),
+            description: 'Vendor profile created during registration',
+            vendorData: {
+              'businessName': _businessNameController.text.trim(),
+              'category': _selectedCategory,
+              'location': _locationController.text.trim(),
+            },
+          );
         }
       }
 

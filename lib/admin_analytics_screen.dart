@@ -219,17 +219,14 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
         return const Center(child: CircularProgressIndicator());
       }
 
-      final customers =
-          provider.allUsers.where((u) => u.role == 'customer').toList();
-
       return RefreshIndicator(
         onRefresh: () => provider.fetchStats(),
         child: ListView.builder(
           padding: const EdgeInsets.all(16),
-          itemCount: customers.length,
+          itemCount: provider.allUsers.length,
           itemBuilder: (context, index) {
-            final customer = customers[index];
-            return _userCard(customer, provider, context);
+            final user = provider.allUsers[index];
+            return _userCard(user, provider, context);
           },
         ),
       );
@@ -442,14 +439,44 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        user.name,
-                        style: Theme.of(context).textTheme.titleMedium,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              user.businessName ?? user.name,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: user.role == 'vendor' ? AppColors.success.withOpacity(0.2) : AppColors.primary.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              user.role.toUpperCase(),
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: user.role == 'vendor' ? AppColors.success : AppColors.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       Text(
                         user.email,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
+                      if (user.role == 'vendor' && user.vendorCategory != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          user.vendorCategory!,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.success,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),

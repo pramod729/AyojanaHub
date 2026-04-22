@@ -3,6 +3,7 @@ import 'package:ayojana_hub/booking_model.dart';
 import 'package:ayojana_hub/event_model.dart';
 import 'package:ayojana_hub/usermodels.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 class AdminProvider with ChangeNotifier {
@@ -25,6 +26,12 @@ class AdminProvider with ChangeNotifier {
   List<EventModel> _allEvents = [];
   List<ActivityLog> _activityLogs = [];
 
+  // Stream subscriptions for real-time updates
+  StreamSubscription<QuerySnapshot>? _usersSubscription;
+  StreamSubscription<QuerySnapshot>? _bookingsSubscription;
+  StreamSubscription<QuerySnapshot>? _eventsSubscription;
+  StreamSubscription<QuerySnapshot>? _activityLogsSubscription;
+
   // Getters
   bool get isLoading => _isLoading;
   int get vendorSignups => _vendorSignups;
@@ -46,50 +53,15 @@ class AdminProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      // Fetch all users
-      final usersSnapshot = await _firestore.collection('users').get();
-      _allUsers = usersSnapshot.docs
-          .map((doc) => UserModel.fromMap(doc.data(), doc.id))
-          .toList();
-      _totalUsers = _allUsers.length;
+      // Cancel existing subscriptions
+      await _cancelSubscriptions();
 
-      // Fetch all vendors
-      final vendorsSnapshot = usersSnapshot.docs
-          .where((doc) => doc.data()['role'] == 'vendor')
-          .toList();
-      _allVendors = vendorsSnapshot
-          .map((doc) => UserModel.fromMap(doc.data(), doc.id))
-          .toList();
-      _vendorSignups = _allVendors.length;
+      // Set up real-time listeners
+      _setupRealtimeListeners();
 
-      // Fetch all bookings
-      final bookingsSnapshot = await _firestore.collection('bookings').get();
-      _allBookings = bookingsSnapshot.docs
-          .map((doc) => BookingModel.fromMap(doc.data(), doc.id))
-          .toList();
-      _totalBookings = _allBookings.length;
+      // Initial fetch for immediate data
+      await _fetchInitialData();
 
-      final completedSnapshot = _allBookings
-          .where((b) => b.paymentStatus == 'completed')
-          .toList();
-      _completedBookings = completedSnapshot.length;
-
-      // Calculate revenue
-      double revenue = 0.0;
-      for (var booking in completedSnapshot) {
-        revenue += booking.price;
-      }
-      _totalRevenue = revenue;
-
-      // Fetch all events
-      final eventsSnapshot = await _firestore.collection('events').get();
-      _allEvents = eventsSnapshot.docs
-          .map((doc) => EventModel.fromMap(doc.data(), doc.id))
-          .toList();
-      _totalEvents = _allEvents.length;
-
-      // Fetch recent activity logs
-      await fetchActivityLogs();
     } catch (e) {
       _error = e.toString();
       debugPrint('Error fetching admin stats: $e');
@@ -97,6 +69,148 @@ class AdminProvider with ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<void> _fetchInitialData() async {
+    // Fetch all users
+    final usersSnapshot = await _firestore.collection('users').get();
+    _allUsers = usersSnapshot.docs
+        .map((doc) => UserModel.fromMap(doc.data(), doc.id))
+        .toList();
+    _totalUsers = _allUsers.length;
+
+    // Fetch all vendors
+    final vendorsSnapshot = usersSnapshot.docs
+        .where((doc) => doc.data()['role'] == 'vendor')
+        .toList();
+    _allVendors = vendorsSnapshot
+        .map((doc) => UserModel.fromMap(doc.data(), doc.id))
+        .toList();
+    _vendorSignups = _allVendors.length;
+
+    // Fetch all bookings
+    final bookingsSnapshot = await _firestore.collection('bookings').get();
+    _allBookings = bookingsSnapshot.docs
+        .map((doc) => BookingModel.fromMap(doc.data(), doc.id))
+        .toList();
+    _totalBookings = _allBookings.length;
+
+    final completedSnapshot = _allBookings
+        .where((b) => b.paymentStatus == 'completed')
+        .toList();
+    _completedBookings = completedSnapshot.length;
+
+    // Calculate revenue
+    double revenue = 0.0;
+    for (var booking in completedSnapshot) {
+      revenue += booking.price;
+    }
+    _totalRevenue = revenue;
+
+    // Fetch all events
+    final eventsSnapshot = await _firestore.collection('events').get();
+    _allEvents = eventsSnapshot.docs
+        .map((doc) => EventModel.fromMap(doc.data(), doc.id))
+        .toList();
+    _totalEvents = _allEvents.length;
+
+    // Fetch recent activity logs
+    await fetchActivityLogs();
+  }
+
+  void _setupRealtimeListeners() {
+    // Users listener
+    _usersSubscription = _firestore.collection('users').snapshots().listen(
+      (snapshot) {
+        _allUsers = snapshot.docs
+            .map((doc) => UserModel.fromMap(doc.data(), doc.id))
+            .toList();
+        _totalUsers = _allUsers.length;
+
+        _allVendors = _allUsers
+            .where((user) => user.role == 'vendor')
+            .toList();
+        _vendorSignups = _allVendors.length;
+
+        notifyListeners();
+      },
+      onError: (error) {
+        debugPrint('Users listener error: $error');
+      },
+    );
+
+    // Bookings listener
+    _bookingsSubscription = _firestore.collection('bookings').snapshots().listen(
+      (snapshot) {
+        _allBookings = snapshot.docs
+            .map((doc) => BookingModel.fromMap(doc.data(), doc.id))
+            .toList();
+        _totalBookings = _allBookings.length;
+
+        final completedSnapshot = _allBookings
+            .where((b) => b.paymentStatus == 'completed')
+            .toList();
+        _completedBookings = completedSnapshot.length;
+
+        // Recalculate revenue
+        double revenue = 0.0;
+        for (var booking in completedSnapshot) {
+          revenue += booking.price;
+        }
+        _totalRevenue = revenue;
+
+        notifyListeners();
+      },
+      onError: (error) {
+        debugPrint('Bookings listener error: $error');
+      },
+    );
+
+    // Events listener
+    _eventsSubscription = _firestore.collection('events').snapshots().listen(
+      (snapshot) {
+        _allEvents = snapshot.docs
+            .map((doc) => EventModel.fromMap(doc.data(), doc.id))
+            .toList();
+        _totalEvents = _allEvents.length;
+
+        notifyListeners();
+      },
+      onError: (error) {
+        debugPrint('Events listener error: $error');
+      },
+    );
+
+    // Activity logs listener
+    _activityLogsSubscription = _firestore
+        .collection('activityLogs')
+        .orderBy('timestamp', descending: true)
+        .limit(1000)
+        .snapshots()
+        .listen(
+      (snapshot) {
+        _activityLogs = snapshot.docs
+            .map((doc) => ActivityLog.fromMap(doc.data(), doc.id))
+            .toList();
+
+        notifyListeners();
+      },
+      onError: (error) {
+        debugPrint('Activity logs listener error: $error');
+      },
+    );
+  }
+
+  Future<void> _cancelSubscriptions() async {
+    await _usersSubscription?.cancel();
+    await _bookingsSubscription?.cancel();
+    await _eventsSubscription?.cancel();
+    await _activityLogsSubscription?.cancel();
+
+    _usersSubscription = null;
+    _bookingsSubscription = null;
+    _eventsSubscription = null;
+    _activityLogsSubscription = null;
   }
 
   Future<void> fetchActivityLogs({int limit = 100}) async {
@@ -546,10 +660,15 @@ class AdminProvider with ChangeNotifier {
   int getEventsByUser(String userId) {
     return _allEvents.where((e) => e.userId == userId).length;
   }
-
   double getVendorRevenue(String vendorId) {
     return _allBookings
         .where((b) => b.vendorId == vendorId && b.paymentStatus == 'completed')
         .fold(0.0, (sum, b) => sum + b.price);
+  }
+
+  @override
+  void dispose() {
+    _cancelSubscriptions();
+    super.dispose();
   }
 }
