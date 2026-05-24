@@ -166,6 +166,7 @@ class _EventProposalsScreenState extends State<EventProposalsScreen> {
     );
 
     if (confirmed != true) return;
+    if (!mounted) return;
 
     final proposalProvider = Provider.of<ProposalProvider>(context, listen: false);
     final error = await proposalProvider.acceptProposal(proposal.id, widget.event.id);
@@ -210,6 +211,7 @@ class _EventProposalsScreenState extends State<EventProposalsScreen> {
     );
 
     if (confirmed != true) return;
+    if (!mounted) return;
 
     final proposalProvider = Provider.of<ProposalProvider>(context, listen: false);
     final error = await proposalProvider.rejectProposal(proposal.id, null);
