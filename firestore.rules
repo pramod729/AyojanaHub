@@ -93,6 +93,21 @@ service cloud.firestore {
       allow update, delete: if request.auth != null && isAdmin();
     }
 
+    // Proposals - Allow customers to request proposals and vendors to submit replies
+    match /proposals/{proposalId} {
+      allow read: if request.auth != null && 
+        (request.auth.uid == resource.data.userId ||
+         request.auth.uid == resource.data.vendorId ||
+         isAdmin());
+      allow create: if request.auth != null && 
+        (request.resource.data.userId == request.auth.uid ||
+         request.resource.data.vendorId == request.auth.uid);
+      allow update, delete: if request.auth != null && 
+        (request.auth.uid == resource.data.vendorId ||
+         request.auth.uid == resource.data.userId ||
+         isAdmin());
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read: if false;

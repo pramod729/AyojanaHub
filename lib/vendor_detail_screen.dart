@@ -1,3 +1,6 @@
+import 'package:ayojana_hub/auth_provider.dart';
+import 'package:ayojana_hub/chat_provider.dart';
+import 'package:ayojana_hub/chat_screen.dart';
 import 'package:ayojana_hub/package_model.dart';
 import 'package:ayojana_hub/vendor_model.dart';
 import 'package:ayojana_hub/vendor_provider.dart';
@@ -23,6 +26,77 @@ class _VendorDetailScreenState extends State<VendorDetailScreen> {
   Future<void> _loadPackages() async {
     final vendorProvider = Provider.of<VendorProvider>(context, listen: false);
     await vendorProvider.loadVendorPackages(widget.vendor.id);
+  }
+
+  Future<void> _startConversation() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    final currentUser = authProvider.user;
+    final currentUserModel = authProvider.userModel;
+
+    if (currentUser == null || currentUserModel == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please log in to contact the vendor'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
+    final conversationId = await chatProvider.createOrGetConversation(
+      customerId: currentUser.uid,
+      customerName: currentUserModel.name,
+      vendorId: widget.vendor.userId ?? widget.vendor.id,
+      vendorName: widget.vendor.name,
+      bookingId: '',
+    );
+
+    if (!mounted) return;
+
+    if (conversationId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(chatProvider.error ?? 'Unable to start conversation'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChatScreen(
+          conversationId: conversationId,
+          otherUserName: widget.vendor.name,
+          otherUserId: widget.vendor.userId ?? widget.vendor.id,
+          userRole: 'customer',
+          bookingId: '',
+        ),
+      ),
+    );
+  }
+
+  void _requestProposal() {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    if (authProvider.user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please log in to request a proposal'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    Navigator.pushNamed(
+      context,
+      '/request-proposal',
+      arguments: widget.vendor,
+    );
   }
 
   @override
@@ -146,6 +220,33 @@ class _VendorDetailScreenState extends State<VendorDetailScreen> {
                   _ContactRow(
                     icon: Icons.location_on,
                     label: widget.vendor.location,
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _startConversation,
+                      icon: const Icon(Icons.message_outlined),
+                      label: const Text('Contact Vendor'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF6C63FF),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: _requestProposal,
+                      icon: const Icon(Icons.send_outlined),
+                      label: const Text('Request Proposal'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF6C63FF),
+                        side: const BorderSide(color: Color(0xFF6C63FF)),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 24),
                   const Text(

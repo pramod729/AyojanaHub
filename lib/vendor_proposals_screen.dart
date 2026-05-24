@@ -1,6 +1,7 @@
 import 'package:ayojana_hub/auth_provider.dart';
 import 'package:ayojana_hub/proposal_model.dart';
 import 'package:ayojana_hub/proposal_provider.dart';
+import 'package:ayojana_hub/vendor_reply_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -99,7 +100,22 @@ class _VendorProposalsScreenState extends State<VendorProposalsScreen> {
               itemCount: proposalProvider.proposals.length,
               itemBuilder: (context, index) {
                 final proposal = proposalProvider.proposals[index];
-                return _VendorProposalCard(proposal: proposal);
+                return _VendorProposalCard(
+                  proposal: proposal,
+                  onReply: proposal.status == 'requested'
+                      ? () async {
+                          final replied = await Navigator.push<bool?>(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => VendorReplyScreen(proposal: proposal),
+                            ),
+                          );
+                          if (replied == true) {
+                            _loadProposals();
+                          }
+                        }
+                      : null,
+                );
               },
             ),
           );
@@ -111,8 +127,9 @@ class _VendorProposalsScreenState extends State<VendorProposalsScreen> {
 
 class _VendorProposalCard extends StatelessWidget {
   final ProposalModel proposal;
+  final VoidCallback? onReply;
 
-  const _VendorProposalCard({required this.proposal});
+  const _VendorProposalCard({required this.proposal, this.onReply});
 
   Color _getStatusColor() {
     switch (proposal.status) {
@@ -120,6 +137,10 @@ class _VendorProposalCard extends StatelessWidget {
         return Colors.green;
       case 'rejected':
         return Colors.red;
+      case 'quoted':
+        return Colors.blue;
+      case 'requested':
+        return Colors.orange;
       default:
         return Colors.orange;
     }
@@ -131,6 +152,10 @@ class _VendorProposalCard extends StatelessWidget {
         return Icons.check_circle;
       case 'rejected':
         return Icons.cancel;
+      case 'quoted':
+        return Icons.reply;
+      case 'requested':
+        return Icons.request_page;
       default:
         return Icons.pending;
     }
@@ -142,6 +167,10 @@ class _VendorProposalCard extends StatelessWidget {
         return 'Accepted';
       case 'rejected':
         return 'Not Selected';
+      case 'quoted':
+        return 'Quoted';
+      case 'requested':
+        return 'Requested';
       default:
         return 'Under Review';
     }
@@ -273,6 +302,38 @@ class _VendorProposalCard extends StatelessWidget {
                 ],
               ),
             ),
+            if (proposal.userMessage != null && proposal.userMessage!.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              const Text(
+                'Customer Message',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                proposal.userMessage!,
+                style: const TextStyle(fontSize: 14),
+              ),
+            ],
+            if (proposal.vendorReply != null && proposal.vendorReply!.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              const Text(
+                'Your Reply',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                proposal.vendorReply!,
+                style: const TextStyle(fontSize: 14),
+              ),
+            ],
             const SizedBox(height: 12),
             Text(
               'Services Included',
@@ -307,6 +368,50 @@ class _VendorProposalCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 11,
                   color: Colors.grey.shade600,
+                ),
+              ),
+            ],
+            if (proposal.status == 'requested') ...[
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: onReply,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6C63FF),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text('Reply to Request'),
+                ),
+              ),
+            ],
+            if (proposal.status == 'quoted') ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.reply, color: Colors.blue.shade700),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'You replied to this request',
+                        style: TextStyle(
+                          color: Colors.blue.shade700,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

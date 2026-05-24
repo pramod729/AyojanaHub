@@ -84,6 +84,63 @@ class ProposalProvider with ChangeNotifier {
     }
   }
 
+  Future<String?> submitProposalRequest(ProposalModel proposal) async {
+    try {
+      final proposalRef = await _firestore.collection('proposals').add(proposal.toMap());
+      await _firestore.collection('events').doc(proposal.eventId).update({
+        'proposalCount': FieldValue.increment(1),
+      });
+
+      await _firestore.collection('notifications').add({
+        'userId': proposal.vendorId,
+        'type': 'proposal_request',
+        'title': 'New Proposal Request',
+        'message': 'A customer requested a proposal for ${proposal.eventName}',
+        'eventId': proposal.eventId,
+        'proposalId': proposalRef.id,
+        'isRead': false,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      return null;
+    } catch (e) {
+      return 'Failed to send proposal request: $e';
+    }
+  }
+
+  Future<String?> replyToProposal(String proposalId, double quotedPrice, String vendorReply) async {
+    try {
+      final proposalDoc = await _firestore.collection('proposals').doc(proposalId).get();
+      final proposalData = proposalDoc.data();
+
+      if (proposalData == null) {
+        return 'Proposal not found';
+      }
+
+      await _firestore.collection('proposals').doc(proposalId).update({
+        'status': 'quoted',
+        'proposedPrice': quotedPrice,
+        'vendorReply': vendorReply,
+        'respondedAt': FieldValue.serverTimestamp(),
+      });
+
+      await _firestore.collection('notifications').add({
+        'userId': proposalData['userId'],
+        'type': 'proposal_reply',
+        'title': 'Vendor replied to your request',
+        'message': '${proposalData['vendorName']} replied to your proposal request for ${proposalData['eventName']}',
+        'eventId': proposalData['eventId'],
+        'proposalId': proposalId,
+        'isRead': false,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      return null;
+    } catch (e) {
+      return 'Failed to send proposal reply: $e';
+    }
+  }
+
   Future<String?> acceptProposal(String proposalId, String eventId) async {
     try {
       final proposalDoc = await _firestore.collection('proposals').doc(proposalId).get();

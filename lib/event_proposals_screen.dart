@@ -249,6 +249,10 @@ class _ProposalCard extends StatelessWidget {
         return Colors.green;
       case 'rejected':
         return Colors.red;
+      case 'quoted':
+        return Colors.blue;
+      case 'requested':
+        return Colors.orange;
       default:
         return Colors.orange;
     }
@@ -260,6 +264,10 @@ class _ProposalCard extends StatelessWidget {
         return 'Accepted';
       case 'rejected':
         return 'Rejected';
+      case 'quoted':
+        return 'Quoted';
+      case 'requested':
+        return 'Requested';
       default:
         return 'Pending';
     }
@@ -416,6 +424,26 @@ class _ProposalCard extends StatelessWidget {
                 height: 1.5,
               ),
             ),
+            if (proposal.vendorReply != null && proposal.vendorReply!.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              const Text(
+                'Vendor Reply',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1F2937),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                proposal.vendorReply!,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade700,
+                  height: 1.5,
+                ),
+              ),
+            ],
             const SizedBox(height: 16),
             const Text(
               'Services Included',
@@ -453,7 +481,32 @@ class _ProposalCard extends StatelessWidget {
                 );
               }).toList(),
             ),
-            if (isPending) ...[
+            if (proposal.status == 'requested') ...[
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.hourglass_top, color: Colors.orange.shade700),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Proposal request sent. Waiting for vendor reply.',
+                        style: TextStyle(
+                          color: Colors.orange.shade700,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            if (isPending || proposal.status == 'quoted') ...[
               const SizedBox(height: 20),
               Row(
                 children: [

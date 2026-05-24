@@ -17,7 +17,8 @@ class ProposalModel {
   final DateTime createdAt;
   final DateTime? respondedAt;
   final String? userNotes;
-
+  final String? vendorReply;
+  final String? userMessage;
   ProposalModel({
     required this.id,
     required this.eventId,
@@ -35,6 +36,8 @@ class ProposalModel {
     required this.createdAt,
     this.respondedAt,
     this.userNotes,
+    this.vendorReply,
+    this.userMessage,
   });
 
   factory ProposalModel.fromMap(Map<String, dynamic> map, String id) {
@@ -57,6 +60,8 @@ class ProposalModel {
           ? (map['respondedAt'] as Timestamp).toDate() 
           : null,
       userNotes: map['userNotes'],
+      vendorReply: map['vendorReply'],
+      userMessage: map['userMessage'],
     );
   }
 
@@ -79,6 +84,8 @@ class ProposalModel {
           ? Timestamp.fromDate(respondedAt!) 
           : null,
       'userNotes': userNotes,
+      'vendorReply': vendorReply,
+      'userMessage': userMessage,
     };
   }
 
@@ -86,6 +93,8 @@ class ProposalModel {
     String? status,
     DateTime? respondedAt,
     String? userNotes,
+    String? vendorReply,
+    String? userMessage,
   }) {
     return ProposalModel(
       id: id,
@@ -104,6 +113,8 @@ class ProposalModel {
       createdAt: createdAt,
       respondedAt: respondedAt ?? this.respondedAt,
       userNotes: userNotes ?? this.userNotes,
+      vendorReply: vendorReply ?? this.vendorReply,
+      userMessage: userMessage ?? this.userMessage,
     );
   }
 }

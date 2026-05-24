@@ -52,10 +52,34 @@ class BookingModel {
   });
 
   factory BookingModel.fromMap(Map<String, dynamic> map, String id) {
-    final bookingTimestamp = map['bookingDate'] as Timestamp?;
-    final eventTimestamp = map['eventDate'] as Timestamp?;
-    final createdAtTimestamp = map['createdAt'] as Timestamp?;
-    final paymentDateTimestamp = map['paymentDate'] as Timestamp?;
+    DateTime parseDateTime(dynamic value) {
+      if (value is Timestamp) return value.toDate();
+      if (value is DateTime) return value;
+      if (value is String) return DateTime.tryParse(value) ?? DateTime.now();
+      return DateTime.now();
+    }
+
+    int parseInt(dynamic value) {
+      if (value is int) return value;
+      if (value is double) return value.toInt();
+      if (value is String) return int.tryParse(value) ?? 0;
+      return 0;
+    }
+
+    double parseDouble(dynamic value) {
+      if (value is double) return value;
+      if (value is int) return value.toDouble();
+      if (value is String) return double.tryParse(value) ?? 0.0;
+      return 0.0;
+    }
+
+    DateTime? parseNullableDateTime(dynamic value) {
+      if (value == null) return null;
+      if (value is Timestamp) return value.toDate();
+      if (value is DateTime) return value;
+      if (value is String) return DateTime.tryParse(value);
+      return null;
+    }
 
     return BookingModel(
       id: id,
@@ -66,20 +90,20 @@ class BookingModel {
       vendorId: map['vendorId'] ?? '',
       vendorName: map['vendorName'] ?? '',
       proposalId: map['proposalId'] ?? '',
-      guestCount: (map['guestCount'] ?? 0) as int,
+      guestCount: parseInt(map['guestCount']),
       eventType: map['eventType'] ?? '',
       vendorCategory: map['vendorCategory'] ?? '',
-      price: (map['price'] ?? 0).toDouble(),
-      bookingDate: (bookingTimestamp ?? Timestamp.now()).toDate(),
-      eventDate: (eventTimestamp ?? Timestamp.now()).toDate(),
+      price: parseDouble(map['price']),
+      bookingDate: parseDateTime(map['bookingDate']),
+      eventDate: parseDateTime(map['eventDate']),
       status: map['status'] ?? 'confirmed',
       notes: map['notes'],
-      createdAt: (createdAtTimestamp ?? Timestamp.now()).toDate(),
+      createdAt: parseDateTime(map['createdAt']),
       paymentStatus: map['paymentStatus'] ?? 'pending',
       orderId: map['orderId'],
       transactionId: map['transactionId'],
       paymentMethod: map['paymentMethod'] ?? 'razorpay',
-      paymentDate: paymentDateTimestamp?.toDate(),
+      paymentDate: parseNullableDateTime(map['paymentDate']),
       paymentError: map['paymentError'],
     );
   }

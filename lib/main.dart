@@ -16,6 +16,8 @@ import 'package:ayojana_hub/profile_screen.dart';
 import 'package:ayojana_hub/proposal_provider.dart';
 import 'package:ayojana_hub/register_screen_new.dart';
 import 'package:ayojana_hub/splash_screen.dart';
+import 'package:ayojana_hub/request_proposal_screen.dart';
+import 'package:ayojana_hub/vendor_model.dart';
 import 'package:ayojana_hub/submit_proposal_screen.dart';
 import 'package:ayojana_hub/theme/app_theme.dart';
 import 'package:ayojana_hub/vendor_dashboard_screen.dart';
@@ -27,6 +29,7 @@ import 'package:ayojana_hub/vendor_register_screen.dart';
 import 'package:ayojana_hub/notifications_screen.dart';
 import 'package:ayojana_hub/help_support_screen.dart';
 import 'package:ayojana_hub/about_screen.dart';
+import 'package:ayojana_hub/conversations_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -85,6 +88,7 @@ class AyojanaHubApp extends StatelessWidget {
           '/vendor-opportunities': (context) => const VendorOpportunitiesScreen(),
           '/vendor-proposals': (context) => const VendorProposalsScreen(),
           '/my-bookings': (context) => const MyBookingsScreen(),
+          '/messages': (context) => const ConversationsListScreen(),
           '/profile': (context) => const ProfileScreen(),
           '/notifications': (context) => const NotificationsScreen(),
           '/help-support': (context) => const HelpSupportScreen(),
@@ -97,6 +101,12 @@ class AyojanaHubApp extends StatelessWidget {
             final event = settings.arguments as EventModel;
             return MaterialPageRoute(
               builder: (context) => SubmitProposalScreen(event: event),
+            );
+          }
+          if (settings.name == '/request-proposal') {
+            final vendor = settings.arguments as VendorModel;
+            return MaterialPageRoute(
+              builder: (context) => RequestProposalScreen(vendor: vendor),
             );
           }
           return null;

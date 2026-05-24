@@ -92,10 +92,11 @@ class _ChatScreenState extends State<ChatScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(widget.otherUserName),
-            Text(
-              'Booking ID: ${widget.bookingId.substring(0, 8)}...',
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
-            ),
+            if (widget.bookingId.isNotEmpty)
+              Text(
+                'Booking ID: ${widget.bookingId.substring(0, 8)}...',
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+              ),
           ],
         ),
         elevation: 0,

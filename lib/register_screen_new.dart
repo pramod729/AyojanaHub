@@ -39,7 +39,7 @@ class _RegisterScreenState extends State<RegisterScreen>
   @override
   void initState() {
     super.initState();
-    _role = widget.initialRole == 'admin' ? 'admin' : 'user';
+    _role = widget.initialRole == 'admin' ? 'admin' : 'customer';
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
@@ -167,10 +167,10 @@ class _RegisterScreenState extends State<RegisterScreen>
         ),
         content: SuccessState(
           title: 'Welcome!',
-          message: 'Your account has been created successfully',
+          message: 'Your account has been created successfully. You are now logged in as a user.',
           onContinue: () {
             Navigator.pop(context);
-            Navigator.pushReplacementNamed(context, '/login');
+            Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
           },
         ),
       ),

@@ -313,18 +313,18 @@ class _VendorRegisterScreenState extends State<VendorRegisterScreen> {
           ],
         ),
         content: const Text(
-          'Your vendor account has been created successfully. You can now log in with your credentials and manage your business profile.',
+          'Your vendor account has been created successfully. You are now logged in as a vendor.',
         ),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
               Navigator.of(context).pushNamedAndRemoveUntil(
-                '/login',
+                '/vendor-dashboard',
                 (route) => false,
               );
             },
-            child: const Text('Go to Login'),
+            child: const Text('Continue to Dashboard'),
           ),
         ],
       ),

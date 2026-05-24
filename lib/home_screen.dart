@@ -542,6 +542,28 @@ class QuickActionsSection extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _QuickActionCard(
+                  icon: Icons.message_outlined,
+                  label: 'Messages',
+                  color: Colors.teal,
+                  onTap: () => Navigator.pushNamed(context, '/messages'),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _QuickActionCard(
+                  icon: Icons.event_available_outlined,
+                  label: 'My Events',
+                  color: Colors.orange,
+                  onTap: () => Navigator.pushNamed(context, '/my-events'),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
