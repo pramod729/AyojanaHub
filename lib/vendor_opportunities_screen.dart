@@ -38,7 +38,6 @@ class _VendorOpportunitiesScreenState extends State<VendorOpportunitiesScreen> {
     try {
       final snapshot = await _firestore
           .collection('events')
-          .where('requiredServices', arrayContains: userModel!.vendorCategory)
           .where('status', isEqualTo: 'awaiting_proposals')
           .orderBy('createdAt', descending: true)
           .get();
@@ -87,7 +86,7 @@ class _VendorOpportunitiesScreenState extends State<VendorOpportunitiesScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 32),
                         child: Text(
-                          'New event opportunities matching your services will appear here',
+                          'New event opportunities will appear here for all vendors',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey.shade500,
