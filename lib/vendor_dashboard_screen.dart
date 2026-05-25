@@ -1,5 +1,7 @@
 import 'package:ayojana_hub/auth_provider.dart';
 import 'package:ayojana_hub/vendor_bookings_screen.dart';
+import 'package:ayojana_hub/vendor_provider.dart';
+import 'package:ayojana_hub/vendor_reviews_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -301,7 +303,7 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                         icon: Icons.star_outline,
                         label: 'Reviews & Ratings',
                         color: const Color(0xFFF59E0B),
-                        onTap: _showCommingSoon,
+                        onTap: _openReviews,
                       ),
                       const SizedBox(height: 24),
                       OutlinedButton.icon(
@@ -353,6 +355,34 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
             child: const Text('Logout'),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _openReviews() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final vendorProvider = Provider.of<VendorProvider>(context, listen: false);
+
+    final user = authProvider.user;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to load vendor reviews. Please login again.')),
+      );
+      return;
+    }
+
+    final vendor = await vendorProvider.getVendorByUserId(user.uid);
+    if (vendor == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No vendor profile found for this account.')),
+      );
+      return;
+    }
+
+    if (!mounted) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => VendorReviewsScreen(vendor: vendor),
       ),
     );
   }

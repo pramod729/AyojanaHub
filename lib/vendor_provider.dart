@@ -1,5 +1,6 @@
 import 'package:ayojana_hub/package_model.dart';
 import 'package:ayojana_hub/vendor_model.dart';
+import 'package:ayojana_hub/vendor_review_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -8,13 +9,19 @@ class VendorProvider with ChangeNotifier {
   
   List<VendorModel> _vendors = [];
   List<PackageModel> _packages = [];
+  List<VendorReviewModel> _vendorReviews = [];
   bool _isLoading = false;
+  bool _isReviewLoading = false;
   String? _error;
+  String? _reviewError;
 
   List<VendorModel> get vendors => _vendors;
   List<PackageModel> get packages => _packages;
+  List<VendorReviewModel> get vendorReviews => _vendorReviews;
   bool get isLoading => _isLoading;
+  bool get isReviewLoading => _isReviewLoading;
   String? get error => _error;
+  String? get reviewError => _reviewError;
 
   // Sample vendor data with Nepali vendors
   static const List<Map<String, dynamic>> _sampleVendors = [
@@ -326,6 +333,99 @@ class VendorProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       // Error loading packages
+    }
+  }
+
+  Future<void> loadVendorReviews(String vendorId) async {
+    _isReviewLoading = true;
+    _reviewError = null;
+    notifyListeners();
+
+    try {
+      final snapshot = await _firestore
+          .collection('vendors')
+          .doc(vendorId)
+          .collection('reviews')
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      _vendorReviews = snapshot.docs
+          .map((doc) => VendorReviewModel.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+          .toList();
+    } catch (e) {
+      _reviewError = 'Failed to load reviews: $e';
+      _vendorReviews = [];
+    }
+
+    _isReviewLoading = false;
+    notifyListeners();
+  }
+
+  Future<String?> submitVendorReview({
+    required String vendorId,
+    required String bookingId,
+    required String customerId,
+    required String customerName,
+    required double rating,
+    required String comment,
+  }) async {
+    try {
+      final vendorRef = _firestore.collection('vendors').doc(vendorId);
+      final reviewRef = vendorRef.collection('reviews').doc(bookingId);
+      final bookingRef = _firestore.collection('bookings').doc(bookingId);
+
+      await _firestore.runTransaction((transaction) async {
+        final vendorSnapshot = await transaction.get(vendorRef);
+        if (!vendorSnapshot.exists) {
+          throw Exception('Vendor not found');
+        }
+
+        final vendorData = vendorSnapshot.data() ?? {};
+        double parseDouble(dynamic value) {
+          if (value is double) return value;
+          if (value is int) return value.toDouble();
+          if (value is String) return double.tryParse(value) ?? 0.0;
+          return 0.0;
+        }
+
+        final currentRating = parseDouble(vendorData['rating']);
+        final currentCountValue = vendorData['reviewCount'];
+        final int currentCount = currentCountValue is int
+            ? currentCountValue
+            : currentCountValue is double
+                ? currentCountValue.toInt()
+                : int.tryParse(currentCountValue?.toString() ?? '0') ?? 0;
+        final nextCount = currentCount + 1;
+        final nextRating = nextCount == 0
+            ? rating
+            : ((currentRating * currentCount) + rating) / nextCount;
+
+        transaction.set(reviewRef, {
+          'vendorId': vendorId,
+          'bookingId': bookingId,
+          'customerId': customerId,
+          'customerName': customerName,
+          'rating': rating,
+          'comment': comment,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+
+        transaction.update(vendorRef, {
+          'rating': nextRating,
+          'reviewCount': nextCount,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        transaction.update(bookingRef, {
+          'reviewRating': rating,
+          'reviewComment': comment,
+          'reviewedAt': FieldValue.serverTimestamp(),
+        });
+      });
+
+      return null;
+    } catch (e) {
+      return 'Failed to submit review: $e';
     }
   }
 

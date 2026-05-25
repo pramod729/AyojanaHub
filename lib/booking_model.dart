@@ -24,6 +24,9 @@ class BookingModel {
   final String paymentMethod;
   final DateTime? paymentDate;
   final String? paymentError;
+  final double? reviewRating;
+  final String? reviewComment;
+  final DateTime? reviewedAt;
 
   BookingModel({
     required this.id,
@@ -49,6 +52,9 @@ class BookingModel {
     this.paymentMethod = 'razorpay',
     this.paymentDate,
     this.paymentError,
+    this.reviewRating,
+    this.reviewComment,
+    this.reviewedAt,
   });
 
   factory BookingModel.fromMap(Map<String, dynamic> map, String id) {
@@ -105,6 +111,9 @@ class BookingModel {
       paymentMethod: map['paymentMethod'] ?? 'razorpay',
       paymentDate: parseNullableDateTime(map['paymentDate']),
       paymentError: map['paymentError'],
+      reviewRating: map['reviewRating'] != null ? parseDouble(map['reviewRating']) : null,
+      reviewComment: map['reviewComment'],
+      reviewedAt: parseNullableDateTime(map['reviewedAt']),
     );
   }
 
@@ -132,6 +141,9 @@ class BookingModel {
       'paymentMethod': paymentMethod,
       'paymentDate': paymentDate != null ? Timestamp.fromDate(paymentDate!) : null,
       'paymentError': paymentError,
+      'reviewRating': reviewRating,
+      'reviewComment': reviewComment,
+      'reviewedAt': reviewedAt != null ? Timestamp.fromDate(reviewedAt!) : null,
     };
   }
 }

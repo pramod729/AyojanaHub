@@ -1,5 +1,7 @@
 import 'package:ayojana_hub/booking_model.dart';
 import 'package:ayojana_hub/booking_provider.dart';
+import 'package:ayojana_hub/auth_provider.dart';
+import 'package:ayojana_hub/vendor_provider.dart';
 import 'package:ayojana_hub/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,11 +19,20 @@ class BookingDetailScreen extends StatefulWidget {
 
 class _BookingDetailScreenState extends State<BookingDetailScreen> {
   Map<String, dynamic>? _docData;
+  final TextEditingController _reviewController = TextEditingController();
+  double _selectedRating = 5.0;
+  bool _isSubmittingReview = false;
 
   @override
   void initState() {
     super.initState();
     _loadBookingDoc();
+  }
+
+  @override
+  void dispose() {
+    _reviewController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadBookingDoc() async {
@@ -35,6 +46,102 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       }
     } catch (e) {
       // ignore
+    }
+  }
+
+  Future<void> _showReviewDialog() async {
+    _selectedRating = 5.0;
+    _reviewController.text = '';
+
+    final shouldSubmit = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Leave a Review'),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (index) {
+                      return IconButton(
+                        icon: Icon(
+                          index < _selectedRating ? Icons.star : Icons.star_border,
+                          color: Colors.amber,
+                        ),
+                        onPressed: () => setState(() => _selectedRating = index + 1.0),
+                      );
+                    }),
+                  ),
+                  TextField(
+                    controller: _reviewController,
+                    maxLines: 4,
+                    decoration: const InputDecoration(
+                      hintText: 'Share your experience',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Submit Review'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldSubmit == true) {
+      await _submitReview();
+    }
+  }
+
+  Future<void> _submitReview() async {
+    if (_isSubmittingReview || widget.booking.id.isEmpty) return;
+
+    setState(() {
+      _isSubmittingReview = true;
+    });
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final vendorProvider = Provider.of<VendorProvider>(context, listen: false);
+    final rating = _selectedRating;
+    final comment = _reviewController.text.trim();
+
+    final error = await vendorProvider.submitVendorReview(
+      vendorId: widget.booking.vendorId,
+      bookingId: widget.booking.id,
+      customerId: widget.booking.customerId,
+      customerName: widget.booking.customerName,
+      rating: rating,
+      comment: comment,
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      _isSubmittingReview = false;
+    });
+
+    if (error == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Review submitted successfully')),
+      );
+      await _loadBookingDoc();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error)),
+      );
     }
   }
 
@@ -242,6 +349,45 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                         );
                       })),
                     ),
+                  ],
+                  if (booking.status.toLowerCase() == 'completed') ...[
+                    const SizedBox(height: 16),
+                    const Text('Review', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textLight)),
+                    const SizedBox(height: 8),
+                    if (_docData != null && _docData!['reviewRating'] != null) ...[
+                      Row(
+                        children: List.generate(
+                          5,
+                          (index) => Icon(
+                            index < (_docData!['reviewRating'] as num).round() ? Icons.star : Icons.star_border,
+                            color: Colors.amber,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _docData!['reviewComment'] ?? 'Thanks for using the service!',
+                        style: const TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.5),
+                      ),
+                    ] else ...[
+                      Text(
+                        'Would you like to rate your experience with ${booking.vendorName}?',
+                        style: const TextStyle(fontSize: 16, color: AppColors.textSecondary, height: 1.5),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _isSubmittingReview ? null : _showReviewDialog,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.gold,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                          ),
+                          child: Text(_isSubmittingReview ? 'Submitting...' : 'Leave a Review'),
+                        ),
+                      ),
+                    ],
                   ],
                 ],
               ),

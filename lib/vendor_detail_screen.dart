@@ -4,6 +4,7 @@ import 'package:ayojana_hub/chat_screen.dart';
 import 'package:ayojana_hub/package_model.dart';
 import 'package:ayojana_hub/vendor_model.dart';
 import 'package:ayojana_hub/vendor_provider.dart';
+import 'package:ayojana_hub/vendor_reviews_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -230,6 +231,25 @@ class _VendorDetailScreenState extends State<VendorDetailScreen> {
                       label: const Text('Contact Vendor'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF6C63FF),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => VendorReviewsScreen(vendor: widget.vendor),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.star_outline),
+                      label: const Text('View Reviews'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFFF59E0B),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                     ),
