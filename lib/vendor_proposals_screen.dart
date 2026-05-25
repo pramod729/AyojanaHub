@@ -1,6 +1,7 @@
 import 'package:ayojana_hub/auth_provider.dart';
 import 'package:ayojana_hub/proposal_model.dart';
 import 'package:ayojana_hub/proposal_provider.dart';
+import 'package:ayojana_hub/vendor_provider.dart';
 import 'package:ayojana_hub/vendor_reply_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -23,9 +24,14 @@ class _VendorProposalsScreenState extends State<VendorProposalsScreen> {
   Future<void> _loadProposals() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final proposalProvider = Provider.of<ProposalProvider>(context, listen: false);
-    
+    final vendorProvider = Provider.of<VendorProvider>(context, listen: false);
+
     if (authProvider.user != null) {
-      await proposalProvider.loadProposalsForVendor(authProvider.user!.uid);
+      final vendor = await vendorProvider.getVendorByUserId(authProvider.user!.uid);
+      await proposalProvider.loadProposalsForVendor(
+        authProvider.user!.uid,
+        vendorDocId: vendor?.id,
+      );
     }
   }
 

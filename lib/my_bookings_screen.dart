@@ -436,6 +436,49 @@ class _BookingCard extends StatelessWidget {
                   ),
                 ],
               ),
+              if (booking.status.toLowerCase() == 'completed') ...[
+                const SizedBox(height: 12),
+                if (booking.reviewRating == null)
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => BookingDetailScreen(booking: booking),
+                          ),
+                        ).then((_) => onRefresh());
+                      },
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.gold,
+                        side: const BorderSide(color: AppColors.gold),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text('Leave a Review'),
+                    ),
+                  )
+                else
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppColors.iconBackground,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.star, size: 16, color: Colors.amber),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Reviewed',
+                          style: TextStyle(color: AppColors.textLight),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ],
           ),
         ),

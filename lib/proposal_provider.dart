@@ -36,23 +36,32 @@ class ProposalProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadProposalsForVendor(String vendorId) async {
+  Future<void> loadProposalsForVendor(String vendorUserId, {String? vendorDocId}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      final snapshot = await _firestore
-          .collection('proposals')
-          .where('vendorId', isEqualTo: vendorId)
-          .orderBy('createdAt', descending: true)
-          .get();
+      final vendorIds = <String>{vendorUserId};
+      if (vendorDocId != null && vendorDocId.isNotEmpty && vendorDocId != vendorUserId) {
+        vendorIds.add(vendorDocId);
+      }
+
+      Query query = _firestore.collection('proposals');
+      if (vendorIds.length == 1) {
+        query = query.where('vendorId', isEqualTo: vendorUserId);
+      } else {
+        query = query.where('vendorId', whereIn: vendorIds.toList());
+      }
+
+      final snapshot = await query.orderBy('createdAt', descending: true).get();
 
       _proposals = snapshot.docs
           .map((doc) => ProposalModel.fromMap(doc.data(), doc.id))
           .toList();
     } catch (e) {
       _error = 'Failed to load proposals: $e';
+      _proposals = [];
     }
 
     _isLoading = false;

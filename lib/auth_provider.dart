@@ -50,11 +50,16 @@ class AuthProvider with ChangeNotifier {
     await _userDocSub?.cancel();
 
     try {
-      _userDocSub = _firestore
-          .collection('users')
-          .doc(_user!.uid)
-          .snapshots()
-          .listen((doc) {
+      final userDocRef = _firestore.collection('users').doc(_user!.uid);
+
+      // Load user data immediately so role-based routing can happen right after login.
+      final snapshot = await userDocRef.get();
+      if (snapshot.exists) {
+        _userModel = UserModel.fromMap(snapshot.data() as Map<String, dynamic>, snapshot.id);
+        notifyListeners();
+      }
+
+      _userDocSub = userDocRef.snapshots().listen((doc) {
         if (doc.exists) {
           _userModel = UserModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
           notifyListeners();
