@@ -297,4 +297,69 @@ class ProposalProvider with ChangeNotifier {
       return false;
     }
   }
+
+  Future<String?> vendorAcceptOffer(String proposalId) async {
+    try {
+      final proposalDoc = await _firestore.collection('proposals').doc(proposalId).get();
+      final proposalData = proposalDoc.data();
+
+      if (proposalData == null) {
+        return 'Proposal not found';
+      }
+
+      await _firestore.collection('proposals').doc(proposalId).update({
+        'status': 'vendor_accepted',
+        'respondedAt': FieldValue.serverTimestamp(),
+      });
+
+      // Send notification to user
+      await _firestore.collection('notifications').add({
+        'userId': proposalData['userId'],
+        'type': 'vendor_accepted_offer',
+        'title': 'Offer Accepted!',
+        'message': '${proposalData['vendorName']} has accepted your offer for ${proposalData['eventName']}',
+        'eventId': proposalData['eventId'],
+        'proposalId': proposalId,
+        'isRead': false,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      return null;
+    } catch (e) {
+      return 'Failed to accept offer: $e';
+    }
+  }
+
+  Future<String?> vendorRejectOffer(String proposalId, String? reason) async {
+    try {
+      final proposalDoc = await _firestore.collection('proposals').doc(proposalId).get();
+      final proposalData = proposalDoc.data();
+
+      if (proposalData == null) {
+        return 'Proposal not found';
+      }
+
+      await _firestore.collection('proposals').doc(proposalId).update({
+        'status': 'vendor_rejected',
+        'respondedAt': FieldValue.serverTimestamp(),
+        'vendorReply': reason,
+      });
+
+      // Send notification to user
+      await _firestore.collection('notifications').add({
+        'userId': proposalData['userId'],
+        'type': 'vendor_rejected_offer',
+        'title': 'Offer Update',
+        'message': '${proposalData['vendorName']} has declined your offer for ${proposalData['eventName']}',
+        'eventId': proposalData['eventId'],
+        'proposalId': proposalId,
+        'isRead': false,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      return null;
+    } catch (e) {
+      return 'Failed to reject offer: $e';
+    }
+  }
 }

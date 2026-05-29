@@ -35,6 +35,124 @@ class _VendorProposalsScreenState extends State<VendorProposalsScreen> {
     }
   }
 
+  Future<void> _acceptOffer(ProposalModel proposal) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Accept Offer'),
+        content: const Text(
+          'Do you want to accept this offer?\n\n'
+          'Once accepted, the booking will be confirmed with the customer.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+            ),
+            child: const Text('Accept'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+    if (!mounted) return;
+
+    final proposalProvider = Provider.of<ProposalProvider>(context, listen: false);
+    final error = await proposalProvider.vendorAcceptOffer(proposal.id);
+
+    if (!mounted) return;
+
+    if (error == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Offer accepted successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      _loadProposals();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error), backgroundColor: Colors.red),
+      );
+    }
+  }
+
+  Future<void> _rejectOffer(ProposalModel proposal) async {
+    final reasonController = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reject Offer'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Do you want to reject this offer?',
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: reasonController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: 'Reason for rejection (optional)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text('Reject'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+    if (!mounted) return;
+
+    final proposalProvider = Provider.of<ProposalProvider>(context, listen: false);
+    final error = await proposalProvider.vendorRejectOffer(
+      proposal.id,
+      reasonController.text.trim().isEmpty ? null : reasonController.text.trim(),
+    );
+
+    if (!mounted) return;
+
+    if (error == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Offer rejected'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      _loadProposals();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error), backgroundColor: Colors.red),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,6 +239,12 @@ class _VendorProposalsScreenState extends State<VendorProposalsScreen> {
                           }
                         }
                       : null,
+                  onAcceptOffer: proposal.status == 'quoted'
+                      ? () => _acceptOffer(proposal)
+                      : null,
+                  onRejectOffer: proposal.status == 'quoted'
+                      ? () => _rejectOffer(proposal)
+                      : null,
                 );
               },
             ),
@@ -134,8 +258,15 @@ class _VendorProposalsScreenState extends State<VendorProposalsScreen> {
 class _VendorProposalCard extends StatelessWidget {
   final ProposalModel proposal;
   final VoidCallback? onReply;
+  final VoidCallback? onAcceptOffer;
+  final VoidCallback? onRejectOffer;
 
-  const _VendorProposalCard({required this.proposal, this.onReply});
+  const _VendorProposalCard({
+    required this.proposal,
+    this.onReply,
+    this.onAcceptOffer,
+    this.onRejectOffer,
+  });
 
   Color _getStatusColor() {
     switch (proposal.status) {
@@ -147,6 +278,10 @@ class _VendorProposalCard extends StatelessWidget {
         return Colors.blue;
       case 'requested':
         return Colors.orange;
+      case 'vendor_accepted':
+        return Colors.green;
+      case 'vendor_rejected':
+        return Colors.red;
       default:
         return Colors.orange;
     }
@@ -162,6 +297,10 @@ class _VendorProposalCard extends StatelessWidget {
         return Icons.reply;
       case 'requested':
         return Icons.request_page;
+      case 'vendor_accepted':
+        return Icons.check_circle;
+      case 'vendor_rejected':
+        return Icons.cancel;
       default:
         return Icons.pending;
     }
@@ -177,6 +316,10 @@ class _VendorProposalCard extends StatelessWidget {
         return 'Quoted';
       case 'requested':
         return 'Requested';
+      case 'vendor_accepted':
+        return 'Accepted by You';
+      case 'vendor_rejected':
+        return 'Rejected by You';
       default:
         return 'Under Review';
     }
@@ -420,6 +563,42 @@ class _VendorProposalCard extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: onRejectOffer,
+                      icon: const Icon(Icons.close),
+                      label: const Text('Reject'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: onAcceptOffer,
+                      icon: const Icon(Icons.check),
+                      label: const Text('Accept'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
             if (proposal.status == 'accepted') ...[
               const SizedBox(height: 16),
@@ -442,6 +621,75 @@ class _VendorProposalCard extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            if (proposal.status == 'vendor_accepted') ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.green.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.green.shade700),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'You accepted this offer. Awaiting customer confirmation.',
+                        style: TextStyle(
+                          color: Colors.green.shade700,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            if (proposal.status == 'vendor_rejected') ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.cancel, color: Colors.red.shade700),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'You rejected this offer',
+                            style: TextStyle(
+                              color: Colors.red.shade700,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
+                          if (proposal.vendorReply != null && proposal.vendorReply!.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              proposal.vendorReply!,
+                              style: TextStyle(
+                                color: Colors.red.shade600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                   ],
