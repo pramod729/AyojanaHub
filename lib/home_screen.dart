@@ -1,8 +1,13 @@
 import 'package:ayojana_hub/ai_assistant_screen.dart';
 import 'package:ayojana_hub/auth_provider.dart';
+import 'package:ayojana_hub/booking_provider.dart';
+import 'package:ayojana_hub/event_model.dart';
+import 'package:ayojana_hub/event_provider.dart';
 import 'package:ayojana_hub/my_bookings_screen.dart';
 import 'package:ayojana_hub/my_events_screen.dart';
 import 'package:ayojana_hub/profile_screen.dart';
+import 'package:ayojana_hub/vendor_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -85,11 +90,31 @@ class HomeTab extends StatefulWidget {
 
 class _HomeTabState extends State<HomeTab> {
   late TextEditingController _searchController;
+  String _searchQuery = '';
+  bool _isSearching = false;
+  String? _searchError;
+  List<VendorModel> _searchVendors = [];
+  List<EventModel> _searchEvents = [];
+  int _searchToken = 0;
 
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
+    _searchController.addListener(() {
+      if (_searchController.text.trim().isEmpty) {
+        setState(() {
+          _searchQuery = '';
+          _searchVendors = [];
+          _searchEvents = [];
+          _searchError = null;
+        });
+      }
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadHomeData();
+    });
   }
 
   @override
@@ -98,11 +123,119 @@ class _HomeTabState extends State<HomeTab> {
     super.dispose();
   }
 
+  Future<void> _loadHomeData() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    if (authProvider.user == null) return;
+
+    await Provider.of<EventProvider>(context, listen: false)
+        .loadMyEvents(authProvider.user!.uid);
+    await Provider.of<BookingProvider>(context, listen: false)
+        .loadMyBookings(authProvider.user!.uid);
+  }
+
+  void _handleSearchQueryChanged(String value) {
+    final trimmed = value.trim();
+    setState(() {
+      _searchQuery = trimmed;
+    });
+
+    if (trimmed.length >= 2) {
+      _triggerSearch(trimmed);
+    } else if (trimmed.isEmpty) {
+      setState(() {
+        _searchVendors = [];
+        _searchEvents = [];
+        _searchError = null;
+        _isSearching = false;
+      });
+    }
+  }
+
+  void _handleSearchTriggered() {
+    final query = _searchController.text.trim();
+    if (query.isEmpty) return;
+    _triggerSearch(query);
+  }
+
+  Future<void> _triggerSearch(String query) async {
+    final token = ++_searchToken;
+    setState(() {
+      _isSearching = true;
+      _searchError = null;
+    });
+
+    try {
+      final lowerQuery = query.toLowerCase();
+
+      final vendorsSnapshot = await FirebaseFirestore.instance
+          .collection('vendors')
+          .get();
+      final eventsSnapshot = await FirebaseFirestore.instance
+          .collection('events')
+          .get();
+
+      final vendors = vendorsSnapshot.docs
+          .map((doc) => VendorModel.fromMap(
+                doc.data() as Map<String, dynamic>,
+                doc.id,
+              ))
+          .where((vendor) {
+            final fullText = [
+              vendor.name,
+              vendor.category,
+              vendor.location,
+              vendor.description,
+              vendor.services.join(' '),
+            ].join(' ').toLowerCase();
+            return fullText.contains(lowerQuery);
+          })
+          .toList();
+
+      final events = eventsSnapshot.docs
+          .map((doc) => EventModel.fromMap(
+                doc.data() as Map<String, dynamic>,
+                doc.id,
+              ))
+          .where((event) {
+            final fullText = [
+              event.eventName,
+              event.eventType,
+              event.location,
+              event.description,
+            ].join(' ').toLowerCase();
+            return fullText.contains(lowerQuery);
+          })
+          .toList();
+
+      if (!mounted || token != _searchToken) return;
+      setState(() {
+        _searchVendors = vendors;
+        _searchEvents = events;
+      });
+    } catch (_) {
+      if (!mounted || token != _searchToken) return;
+      setState(() {
+        _searchError = 'Unable to complete search at this time.';
+      });
+    } finally {
+      if (!mounted || token != _searchToken) return;
+      setState(() {
+        _isSearching = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final eventProvider = Provider.of<EventProvider>(context);
+    final bookingProvider = Provider.of<BookingProvider>(context);
     final userName = authProvider.userModel?.name ?? 'User';
     final isAdmin = authProvider.userModel?.role == 'admin';
+
+    final eventCount = eventProvider.events.length;
+    final bookingCount = bookingProvider.bookings.length;
+    final budgetTotal = eventProvider.events.fold<double>(0.0, (sum, event) => sum + (event.budget ?? 0.0));
 
     return Scaffold(
       // ==================== APP BAR ====================
@@ -153,17 +286,38 @@ class _HomeTabState extends State<HomeTab> {
             _buildSectionSpacing(),
 
             // Section: Search Bar
-            SearchBarWidget(controller: _searchController),
+            SearchBarWidget(
+              controller: _searchController,
+              onChanged: _handleSearchQueryChanged,
+              onSearchTap: _handleSearchTriggered,
+            ),
 
             _buildSectionSpacing(),
 
-            // Section: Upcoming Event Card
-            UpcomingEventCard(),
+            if (_searchQuery.isNotEmpty)
+              SearchResultsSection(
+                query: _searchQuery,
+                isSearching: _isSearching,
+                vendors: _searchVendors,
+                events: _searchEvents,
+                errorMessage: _searchError,
+              )
+            else ...[
+              // Section: Upcoming Event Card
+              UpcomingEventCard(
+                events: eventProvider.events,
+                onCreateTap: () => Navigator.pushNamed(context, '/create-event').then((_) => _loadHomeData()),
+              ),
 
-            _buildSectionSpacing(),
+              _buildSectionSpacing(),
 
-            // Section: Quick Stats Row
-            const QuickStatsRow(),
+              // Section: Quick Stats Row
+              QuickStatsRow(
+                eventCount: eventCount,
+                bookingCount: bookingCount,
+                budgetTotal: budgetTotal,
+              ),
+            ],
 
             _buildSectionSpacing(),
 
@@ -317,6 +471,7 @@ class SearchBarWidget extends StatelessWidget {
         child: TextField(
           controller: controller,
           onChanged: onChanged,
+          onSubmitted: (_) => onSearchTap?.call(),
           decoration: InputDecoration(
             hintText: 'Search services, vendors, events...',
             hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -325,6 +480,14 @@ class SearchBarWidget extends StatelessWidget {
             prefixIcon: Icon(
               Icons.search,
               color: Theme.of(context).textTheme.bodySmall?.color,
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(
+                Icons.arrow_forward_ios,
+                color: Theme.of(context).textTheme.bodySmall?.color,
+                size: 18,
+              ),
+              onPressed: onSearchTap,
             ),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.symmetric(
@@ -339,15 +502,186 @@ class SearchBarWidget extends StatelessWidget {
   }
 }
 
-/// 3. UPCOMING EVENT CARD WIDGET
-/// Displays the next upcoming event or prompts to create one
-class UpcomingEventCard extends StatelessWidget {
-  const UpcomingEventCard({super.key});
+class SearchResultsSection extends StatelessWidget {
+  final String query;
+  final bool isSearching;
+  final List<VendorModel> vendors;
+  final List<EventModel> events;
+  final String? errorMessage;
+
+  const SearchResultsSection({
+    super.key,
+    required this.query,
+    required this.isSearching,
+    required this.vendors,
+    required this.events,
+    this.errorMessage,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Connect to event provider to get actual upcoming event
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Search results for "$query"',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          const SizedBox(height: 16),
+          if (isSearching)
+            const Center(child: CircularProgressIndicator())
+          else if (errorMessage != null)
+            Text(
+              errorMessage!,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.redAccent,
+                  ),
+            )
+          else if (vendors.isEmpty && events.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Text(
+                'No vendors or events found for this query.',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            )
+          else ...[
+            if (vendors.isNotEmpty) ...[
+              Text(
+                'Vendors',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+              const SizedBox(height: 12),
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: vendors.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final vendor = vendors[index];
+                  return Card(
+                    margin: EdgeInsets.zero,
+                    child: ListTile(
+                      title: Text(vendor.name),
+                      subtitle: Text('${vendor.category} • ${vendor.location}'),
+                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      onTap: () => Navigator.pushNamed(context, '/vendors'),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 24),
+            ],
+            if (events.isNotEmpty) ...[
+              Text(
+                'Events',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+              const SizedBox(height: 12),
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: events.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final event = events[index];
+                  return Card(
+                    margin: EdgeInsets.zero,
+                    child: ListTile(
+                      title: Text(event.eventName),
+                      subtitle: Text('${event.eventType} • ${event.location}'),
+                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      onTap: () => Navigator.pushNamed(context, '/my-events'),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+}
 
+/// 3. UPCOMING EVENT CARD WIDGET
+/// Displays the next upcoming event or prompts to create one
+class UpcomingEventCard extends StatelessWidget {
+  final List<EventModel> events;
+  final VoidCallback onCreateTap;
+
+  const UpcomingEventCard({
+    super.key,
+    required this.events,
+    required this.onCreateTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final upcomingEvents = events
+        .where((event) => !event.eventDate.isBefore(DateTime.now()))
+        .toList()
+      ..sort((a, b) => a.eventDate.compareTo(b.eventDate));
+
+    if (upcomingEvents.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: Theme.of(context).primaryColor.withOpacity(0.3),
+              width: 1.5,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.event_available,
+                size: 48,
+                color: Theme.of(context).primaryColor.withOpacity(0.6),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Plan your next event',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Create an event to start inviting vendors and managing bookings.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).textTheme.bodySmall?.color,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: onCreateTap,
+                icon: const Icon(Icons.add, size: 18),
+                label: const Text('Create Event'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final nextEvent = upcomingEvents.first;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -362,38 +696,57 @@ class UpcomingEventCard extends StatelessWidget {
           ),
         ),
         child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.event_note,
-                    size: 48,
-                    color: Theme.of(context).primaryColor.withOpacity(0.6),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'No upcoming events',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Create your first event and start planning!',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).textTheme.bodySmall?.color,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () =>
-                        Navigator.pushNamed(context, '/create-event'),
-                    icon: const Icon(Icons.add, size: 18),
-                    label: const Text('Create Event'),
-                  ),
-                ],
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Upcoming Event',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
               ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              nextEvent.eventName,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '${nextEvent.eventType} • ${nextEvent.location}',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(Icons.calendar_today, size: 18, color: Theme.of(context).primaryColor),
+                const SizedBox(width: 8),
+                Text(
+                  '${nextEvent.eventDate.day}/${nextEvent.eventDate.month}/${nextEvent.eventDate.year}',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(Icons.people, size: 18, color: Theme.of(context).primaryColor),
+                const SizedBox(width: 8),
+                Text(
+                  '${nextEvent.guestCount} guests',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/my-events');
+              },
+              child: const Text('View My Events'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -402,7 +755,25 @@ class UpcomingEventCard extends StatelessWidget {
 /// 4. QUICK STATS ROW WIDGET
 /// Three cards showing key statistics (Events, Bookings, Budget)
 class QuickStatsRow extends StatelessWidget {
-  const QuickStatsRow({super.key});
+  final int eventCount;
+  final int bookingCount;
+  final double budgetTotal;
+
+  const QuickStatsRow({
+    super.key,
+    required this.eventCount,
+    required this.bookingCount,
+    required this.budgetTotal,
+  });
+
+  String get formattedBudget {
+    if (budgetTotal == 0) return '₹0';
+    if (budgetTotal >= 100000) {
+      final lakhs = budgetTotal / 100000;
+      return '₹${lakhs.toStringAsFixed(budgetTotal % 100000 == 0 ? 0 : 1)}L';
+    }
+    return '₹${budgetTotal.toStringAsFixed(0)}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -414,7 +785,7 @@ class QuickStatsRow extends StatelessWidget {
           Expanded(
             child: _StatCard(
               icon: Icons.event,
-              value: '5',
+              value: eventCount.toString(),
               label: 'Events',
               color: Colors.blue,
             ),
@@ -424,7 +795,7 @@ class QuickStatsRow extends StatelessWidget {
           Expanded(
             child: _StatCard(
               icon: Icons.bookmark,
-              value: '12',
+              value: bookingCount.toString(),
               label: 'Bookings',
               color: Colors.purple,
             ),
@@ -434,7 +805,7 @@ class QuickStatsRow extends StatelessWidget {
           Expanded(
             child: _StatCard(
               icon: Icons.wallet,
-              value: '₹5L',
+              value: formattedBudget,
               label: 'Budget',
               color: Colors.green,
             ),

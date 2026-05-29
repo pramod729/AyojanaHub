@@ -106,7 +106,9 @@ class _RequestProposalScreenState extends State<RequestProposalScreen> {
       eventName: _selectedEvent!.eventName,
       eventType: _selectedEvent!.eventType,
       userId: currentUser.uid,
-      vendorId: widget.vendor.userId ?? widget.vendor.id,
+      vendorId: (widget.vendor.userId != null && widget.vendor.userId!.isNotEmpty)
+          ? widget.vendor.userId!
+          : widget.vendor.id,
       vendorName: widget.vendor.name,
       vendorCategory: widget.vendor.category,
       proposedPrice: double.tryParse(_priceController.text.trim()) ?? 0,

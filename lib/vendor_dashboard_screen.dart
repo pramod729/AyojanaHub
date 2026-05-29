@@ -1,4 +1,5 @@
 import 'package:ayojana_hub/auth_provider.dart';
+import 'package:ayojana_hub/theme/app_colors.dart';
 import 'package:ayojana_hub/vendor_bookings_screen.dart';
 import 'package:ayojana_hub/vendor_provider.dart';
 import 'package:ayojana_hub/vendor_reviews_screen.dart';
@@ -21,12 +22,15 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
     final textColor = theme.textTheme.bodyLarge?.color ?? Colors.white;
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Vendor Dashboard'),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: theme.appBarTheme.backgroundColor,
+        backgroundColor: AppColors.background,
+        iconTheme: const IconThemeData(color: AppColors.textLight),
+        titleTextStyle: const TextStyle(color: AppColors.textLight, fontSize: 20, fontWeight: FontWeight.w600),
+        actionsIconTheme: const IconThemeData(color: AppColors.textLight),
         actions: [
           IconButton(
             onPressed: () => Navigator.of(context).pushNamed('/profile'),
@@ -49,7 +53,7 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Container(
-                  color: cardColor,
+                  color: AppColors.card,
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     children: [
@@ -408,8 +412,9 @@ class _InfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.cardColor,
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.12),
@@ -510,9 +515,9 @@ class _ActionButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: theme.cardColor,
+          color: AppColors.card,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: theme.dividerColor),
+          border: Border.all(color: AppColors.border),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.08),
@@ -701,12 +706,14 @@ class _EditVendorProfileScreenState extends State<EditVendorProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Edit Profile'),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
+        iconTheme: const IconThemeData(color: AppColors.textLight),
+        titleTextStyle: const TextStyle(color: AppColors.textLight, fontSize: 20, fontWeight: FontWeight.w600),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -720,6 +727,20 @@ class _EditVendorProfileScreenState extends State<EditVendorProfileScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Business Name',
                   prefixIcon: Icon(Icons.business),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    borderSide: BorderSide(color: AppColors.gold),
+                  ),
                 ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
@@ -734,6 +755,20 @@ class _EditVendorProfileScreenState extends State<EditVendorProfileScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Category',
                   prefixIcon: Icon(Icons.category),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    borderSide: BorderSide(color: AppColors.gold),
+                  ),
                 ),
                 items: _categories.map((category) {
                   return DropdownMenuItem(
@@ -756,6 +791,20 @@ class _EditVendorProfileScreenState extends State<EditVendorProfileScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Location',
                   prefixIcon: Icon(Icons.location_on),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    borderSide: BorderSide(color: AppColors.gold),
+                  ),
                 ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
@@ -771,6 +820,20 @@ class _EditVendorProfileScreenState extends State<EditVendorProfileScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Phone',
                   prefixIcon: Icon(Icons.phone),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    borderSide: BorderSide(color: AppColors.gold),
+                  ),
                 ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
@@ -787,6 +850,20 @@ class _EditVendorProfileScreenState extends State<EditVendorProfileScreen> {
                   labelText: 'Business Description',
                   prefixIcon: Icon(Icons.description),
                   alignLabelWithHint: true,
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    borderSide: BorderSide(color: AppColors.gold),
+                  ),
                 ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
@@ -799,9 +876,9 @@ class _EditVendorProfileScreenState extends State<EditVendorProfileScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.card,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                  border: Border.all(color: AppColors.border),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -817,7 +894,9 @@ class _EditVendorProfileScreenState extends State<EditVendorProfileScreen> {
                     const SizedBox(height: 12),
                     ..._servicesByCategory[_selectedCategory]!.map(
                       (service) => CheckboxListTile(
-                        title: Text(service),
+                        tileColor: AppColors.surface,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        title: Text(service, style: const TextStyle(color: AppColors.textLight)),
                         value: _selectedServices.contains(service),
                         onChanged: (selected) {
                           setState(() {
@@ -828,7 +907,7 @@ class _EditVendorProfileScreenState extends State<EditVendorProfileScreen> {
                             }
                           });
                         },
-                        activeColor: const Color(0xFF4F46E5),
+                        activeColor: AppColors.gold,
                         contentPadding: EdgeInsets.zero,
                       ),
                     ),

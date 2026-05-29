@@ -17,7 +17,6 @@ class ProposalProvider with ChangeNotifier {
     _isLoading = true;
     _error = null;
     notifyListeners();
-
     try {
       final snapshot = await _firestore
           .collection('proposals')
@@ -42,23 +41,52 @@ class ProposalProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final vendorIds = <String>{vendorUserId};
-      if (vendorDocId != null && vendorDocId.isNotEmpty && vendorDocId != vendorUserId) {
-        vendorIds.add(vendorDocId);
-      }
+      final proposals = <ProposalModel>[];
 
-      Query query = _firestore.collection('proposals');
-      if (vendorIds.length == 1) {
-        query = query.where('vendorId', isEqualTo: vendorUserId);
-      } else {
-        query = query.where('vendorId', whereIn: vendorIds.toList());
-      }
+      final firstQuery = await _firestore
+          .collection('proposals')
+          .where('vendorId', isEqualTo: vendorUserId)
+          .orderBy('createdAt', descending: true)
+          .get();
 
-      final snapshot = await query.orderBy('createdAt', descending: true).get();
+      try {
+        // ignore: avoid_print
+        print('loadProposalsForVendor: firstQuery found ${firstQuery.docs.length} docs for vendorUserId=$vendorUserId');
+      } catch (_) {}
 
-      _proposals = snapshot.docs
+      proposals.addAll(firstQuery.docs
           .map((doc) => ProposalModel.fromMap(doc.data() as Map<String, dynamic>, doc.id))
-          .toList();
+          .toList());
+
+      if (vendorDocId != null && vendorDocId.isNotEmpty && vendorDocId != vendorUserId) {
+        final secondQuery = await _firestore
+            .collection('proposals')
+            .where('vendorId', isEqualTo: vendorDocId)
+            .orderBy('createdAt', descending: true)
+            .get();
+
+        try {
+          // ignore: avoid_print
+          print('loadProposalsForVendor: secondQuery found ${secondQuery.docs.length} docs for vendorDocId=$vendorDocId');
+        } catch (_) {}
+
+        proposals.addAll(secondQuery.docs
+            .map((doc) => ProposalModel.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+            .toList());
+      }
+
+      final uniqueProposals = <String, ProposalModel>{};
+      for (var proposal in proposals) {
+        uniqueProposals[proposal.id] = proposal;
+      }
+
+      _proposals = uniqueProposals.values.toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      try {
+        // ignore: avoid_print
+        print('loadProposalsForVendor: loaded ${_proposals.length} unique proposals: ${_proposals.map((p) => p.id).toList()}');
+      } catch (_) {}
     } catch (e) {
       _error = 'Failed to load proposals: $e';
       _proposals = [];
@@ -95,6 +123,10 @@ class ProposalProvider with ChangeNotifier {
 
   Future<String?> submitProposalRequest(ProposalModel proposal) async {
     try {
+      try {
+        // ignore: avoid_print
+        print('submitProposalRequest: saving proposal for vendorId=${proposal.vendorId}, eventId=${proposal.eventId}');
+      } catch (_) {}
       final proposalRef = await _firestore.collection('proposals').add(proposal.toMap());
       await _firestore.collection('events').doc(proposal.eventId).update({
         'proposalCount': FieldValue.increment(1),

@@ -46,10 +46,14 @@ class _VendorBookingsScreenState extends State<VendorBookingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('My Bookings'),
         centerTitle: true,
         elevation: 0,
+        backgroundColor: AppColors.background,
+        iconTheme: const IconThemeData(color: AppColors.textLight),
+        titleTextStyle: const TextStyle(color: AppColors.textLight, fontSize: 20, fontWeight: FontWeight.w600),
       ),
       body: Column(
         children: [
@@ -108,12 +112,20 @@ class _VendorBookingsScreenState extends State<VendorBookingsScreen> {
                         children: [
                           Icon(Icons.error_outline, size: 48, color: AppColors.error),
                           const SizedBox(height: 12),
-                          Text(
-                            bookingProvider.error!,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.card,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: AppColors.border),
+                            ),
+                            child: Text(
+                              bookingProvider.error ?? 'Unable to load your bookings. Please try again.',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: AppColors.textLight,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 16),

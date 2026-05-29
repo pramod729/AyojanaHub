@@ -47,10 +47,14 @@ class _VendorDetailScreenState extends State<VendorDetailScreen> {
       return;
     }
 
+    final vendorId = (widget.vendor.userId != null && widget.vendor.userId!.isNotEmpty)
+        ? widget.vendor.userId!
+        : widget.vendor.id;
+
     final conversationId = await chatProvider.createOrGetConversation(
       customerId: currentUser.uid,
       customerName: currentUserModel.name,
-      vendorId: widget.vendor.userId ?? widget.vendor.id,
+      vendorId: vendorId,
       vendorName: widget.vendor.name,
       bookingId: '',
     );
@@ -73,7 +77,7 @@ class _VendorDetailScreenState extends State<VendorDetailScreen> {
         builder: (_) => ChatScreen(
           conversationId: conversationId,
           otherUserName: widget.vendor.name,
-          otherUserId: widget.vendor.userId ?? widget.vendor.id,
+          otherUserId: vendorId,
           userRole: 'customer',
           bookingId: '',
         ),

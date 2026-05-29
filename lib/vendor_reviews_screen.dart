@@ -25,8 +25,13 @@ class _VendorReviewsScreenState extends State<VendorReviewsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Reviews & Ratings'),
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: AppColors.textLight),
+        titleTextStyle: const TextStyle(color: AppColors.textLight, fontSize: 20, fontWeight: FontWeight.w600),
       ),
       body: Consumer<VendorProvider>(
         builder: (context, vendorProvider, _) {
@@ -71,7 +76,27 @@ class _VendorReviewsScreenState extends State<VendorReviewsScreen> {
                 ),
                 const SizedBox(height: 16),
                 if (error != null) ...[
-                  Text(error, style: const TextStyle(color: Colors.redAccent)),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.card,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: Row(
+                      children: const [
+                        Icon(Icons.error_outline, color: AppColors.error),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Unable to load reviews. Pull down to refresh.',
+                            style: TextStyle(color: AppColors.textLight, fontSize: 14),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 12),
                 ],
                 if (reviews.isEmpty)

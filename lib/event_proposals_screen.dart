@@ -248,8 +248,10 @@ class _ProposalCard extends StatelessWidget {
   Color _getStatusColor() {
     switch (proposal.status) {
       case 'accepted':
+      case 'vendor_accepted':
         return Colors.green;
       case 'rejected':
+      case 'vendor_rejected':
         return Colors.red;
       case 'quoted':
         return Colors.blue;
@@ -270,6 +272,10 @@ class _ProposalCard extends StatelessWidget {
         return 'Quoted';
       case 'requested':
         return 'Requested';
+      case 'vendor_accepted':
+        return 'Vendor Accepted';
+      case 'vendor_rejected':
+        return 'Vendor Rejected';
       default:
         return 'Pending';
     }
@@ -571,6 +577,56 @@ class _ProposalCard extends StatelessWidget {
                         'You selected this proposal',
                         style: TextStyle(
                           color: Colors.green.shade700,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            if (proposal.status == 'vendor_accepted') ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.green.shade700),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'The vendor accepted your request. Please review and proceed.',
+                        style: TextStyle(
+                          color: Colors.green.shade700,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            if (proposal.status == 'vendor_rejected') ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.cancel, color: Colors.red.shade700),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'The vendor declined your request.',
+                        style: TextStyle(
+                          color: Colors.red.shade700,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

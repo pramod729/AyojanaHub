@@ -78,22 +78,17 @@ class EventProvider with ChangeNotifier {
           .get();
 
       for (var userDoc in usersSnapshot.docs) {
-        final userData = userDoc.data();
-        final vendorCategory = userData['vendorCategory'] as String?;
-        
-        if (vendorCategory != null && event.requiredServices.contains(vendorCategory)) {
-          await _firestore.collection('notifications').add({
-            'userId': userDoc.id,
-            'type': 'new_event_opportunity',
-            'title': 'New Event Opportunity',
-            'message': 'New ${event.eventType} event "${event.eventName}" is looking for ${vendorCategory} services',
-            'eventId': eventId,
-            'eventName': event.eventName,
-            'eventType': event.eventType,
-            'isRead': false,
-            'createdAt': FieldValue.serverTimestamp(),
-          });
-        }
+        await _firestore.collection('notifications').add({
+          'userId': userDoc.id,
+          'type': 'new_event_opportunity',
+          'title': 'New Event Opportunity',
+          'message': 'A new event "${event.eventName}" is now available for proposals.',
+          'eventId': eventId,
+          'eventName': event.eventName,
+          'eventType': event.eventType,
+          'isRead': false,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
       }
     } catch (e) {
       // Error notifying vendors

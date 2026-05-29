@@ -153,6 +153,123 @@ class _VendorProposalsScreenState extends State<VendorProposalsScreen> {
     }
   }
 
+  Future<void> _acceptRequest(ProposalModel proposal) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Accept Request'),
+        content: const Text(
+          'Do you want to accept this customer request? Once accepted, the customer will be notified.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+            ),
+            child: const Text('Accept'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+    if (!mounted) return;
+
+    final proposalProvider = Provider.of<ProposalProvider>(context, listen: false);
+    final error = await proposalProvider.vendorAcceptOffer(proposal.id);
+
+    if (!mounted) return;
+
+    if (error == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Request accepted successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      _loadProposals();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error), backgroundColor: Colors.red),
+      );
+    }
+  }
+
+  Future<void> _rejectRequest(ProposalModel proposal) async {
+    final reasonController = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reject Request'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Do you want to reject this customer request?',
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: reasonController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: 'Reason for rejection (optional)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text('Reject'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+    if (!mounted) return;
+
+    final proposalProvider = Provider.of<ProposalProvider>(context, listen: false);
+    final error = await proposalProvider.vendorRejectOffer(
+      proposal.id,
+      reasonController.text.trim().isEmpty ? null : reasonController.text.trim(),
+    );
+
+    if (!mounted) return;
+
+    if (error == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Request rejected'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      _loadProposals();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error), backgroundColor: Colors.red),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -239,6 +356,12 @@ class _VendorProposalsScreenState extends State<VendorProposalsScreen> {
                           }
                         }
                       : null,
+                  onAcceptRequest: proposal.status == 'requested'
+                      ? () => _acceptRequest(proposal)
+                      : null,
+                  onRejectRequest: proposal.status == 'requested'
+                      ? () => _rejectRequest(proposal)
+                      : null,
                   onAcceptOffer: proposal.status == 'quoted'
                       ? () => _acceptOffer(proposal)
                       : null,
@@ -258,12 +381,16 @@ class _VendorProposalsScreenState extends State<VendorProposalsScreen> {
 class _VendorProposalCard extends StatelessWidget {
   final ProposalModel proposal;
   final VoidCallback? onReply;
+  final VoidCallback? onAcceptRequest;
+  final VoidCallback? onRejectRequest;
   final VoidCallback? onAcceptOffer;
   final VoidCallback? onRejectOffer;
 
   const _VendorProposalCard({
     required this.proposal,
     this.onReply,
+    this.onAcceptRequest,
+    this.onRejectRequest,
     this.onAcceptOffer,
     this.onRejectOffer,
   });
@@ -522,19 +649,57 @@ class _VendorProposalCard extends StatelessWidget {
             ],
             if (proposal.status == 'requested') ...[
               const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: onReply,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6C63FF),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: onReply,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF6C63FF),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Reply to Request'),
                     ),
                   ),
-                  child: const Text('Reply to Request'),
-                ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: onRejectRequest,
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        side: const BorderSide(color: Colors.red),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Reject Request',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: onAcceptRequest,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Accept Request'),
+                    ),
+                  ),
+                ],
               ),
             ],
             if (proposal.status == 'quoted') ...[
