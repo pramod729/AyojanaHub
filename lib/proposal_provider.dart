@@ -57,7 +57,7 @@ class ProposalProvider with ChangeNotifier {
       final snapshot = await query.orderBy('createdAt', descending: true).get();
 
       _proposals = snapshot.docs
-          .map((doc) => ProposalModel.fromMap(doc.data(), doc.id))
+          .map((doc) => ProposalModel.fromMap(doc.data() as Map<String, dynamic>, doc.id))
           .toList();
     } catch (e) {
       _error = 'Failed to load proposals: $e';
