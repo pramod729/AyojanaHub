@@ -260,6 +260,8 @@ class _ProposalCard extends StatelessWidget {
         return Colors.blue;
       case 'requested':
         return Colors.orange;
+      case 'info_requested':
+        return const Color(0xFF6C63FF);
       default:
         return Colors.orange;
     }
@@ -279,6 +281,8 @@ class _ProposalCard extends StatelessWidget {
         return 'Vendor Accepted';
       case 'vendor_rejected':
         return 'Vendor Rejected';
+      case 'info_requested':
+        return 'Vendor Needs Info';
       default:
         return 'Pending';
     }

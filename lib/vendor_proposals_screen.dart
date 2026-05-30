@@ -264,6 +264,77 @@ class _VendorProposalsScreenState extends State<VendorProposalsScreen> {
     }
   }
 
+  Future<void> _requestMoreInfo(ProposalModel proposal) async {
+    final questionController = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Request More Info'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('What would you like the customer to clarify before you quote?'),
+              const SizedBox(height: 16),
+              TextField(
+                controller: questionController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: 'e.g., How many guests need catering? Any dietary needs?',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF6C63FF)),
+            child: const Text('Send'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+    if (questionController.text.trim().isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a question'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+    if (!mounted) return;
+
+    final proposalProvider = Provider.of<ProposalProvider>(context, listen: false);
+    final error = await proposalProvider.vendorRequestMoreInfo(
+      proposal.id,
+      questionController.text.trim(),
+    );
+
+    if (!mounted) return;
+
+    if (error == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Info request sent to customer'),
+          backgroundColor: Color(0xFF6C63FF),
+        ),
+      );
+      _loadProposals();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error), backgroundColor: Colors.red),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -356,6 +427,9 @@ class _VendorProposalsScreenState extends State<VendorProposalsScreen> {
                   onRejectRequest: proposal.status == 'requested'
                       ? () => _rejectRequest(proposal)
                       : null,
+                  onRequestInfo: proposal.status == 'requested'
+                      ? () => _requestMoreInfo(proposal)
+                      : null,
                   onAcceptOffer: proposal.status == 'quoted'
                       ? () => _acceptOffer(proposal)
                       : null,
@@ -377,6 +451,7 @@ class _VendorProposalCard extends StatelessWidget {
   final VoidCallback? onReply;
   final VoidCallback? onAcceptRequest;
   final VoidCallback? onRejectRequest;
+  final VoidCallback? onRequestInfo;
   final VoidCallback? onAcceptOffer;
   final VoidCallback? onRejectOffer;
 
@@ -385,6 +460,7 @@ class _VendorProposalCard extends StatelessWidget {
     this.onReply,
     this.onAcceptRequest,
     this.onRejectRequest,
+    this.onRequestInfo,
     this.onAcceptOffer,
     this.onRejectOffer,
   });
@@ -403,6 +479,8 @@ class _VendorProposalCard extends StatelessWidget {
         return Colors.green;
       case 'vendor_rejected':
         return Colors.red;
+      case 'info_requested':
+        return const Color(0xFF6C63FF);
       default:
         return Colors.orange;
     }
@@ -422,6 +500,8 @@ class _VendorProposalCard extends StatelessWidget {
         return Icons.check_circle;
       case 'vendor_rejected':
         return Icons.cancel;
+      case 'info_requested':
+        return Icons.help_outline;
       default:
         return Icons.pending;
     }
@@ -441,6 +521,8 @@ class _VendorProposalCard extends StatelessWidget {
         return 'Accepted by You';
       case 'vendor_rejected':
         return 'Rejected by You';
+      case 'info_requested':
+        return 'Info Requested';
       default:
         return 'Under Review';
     }
@@ -664,6 +746,28 @@ class _VendorProposalCard extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: onRequestInfo,
+                      icon: const Icon(Icons.help_outline, color: Color(0xFF6C63FF)),
+                      label: const Text(
+                        'Request More Info',
+                        style: TextStyle(color: Color(0xFF6C63FF)),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        side: const BorderSide(color: Color(0xFF6C63FF)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
                     child: OutlinedButton(
                       onPressed: onRejectRequest,
                       style: OutlinedButton.styleFrom(
@@ -844,6 +948,48 @@ class _VendorProposalCard extends StatelessWidget {
                               proposal.vendorReply!,
                               style: TextStyle(
                                 color: Colors.red.shade600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            if (proposal.status == 'info_requested') ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6C63FF).withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFF6C63FF).withValues(alpha: 0.4)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.help_outline, color: Color(0xFF6C63FF)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'You asked the customer for more details',
+                            style: TextStyle(
+                              color: Color(0xFF6C63FF),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
+                          if (proposal.vendorReply != null && proposal.vendorReply!.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              proposal.vendorReply!,
+                              style: const TextStyle(
+                                color: Color(0xFF4B46B5),
                                 fontSize: 12,
                               ),
                             ),

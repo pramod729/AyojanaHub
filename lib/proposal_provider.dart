@@ -342,6 +342,42 @@ class ProposalProvider with ChangeNotifier {
     }
   }
 
+  // Vendor asks the customer for more details before quoting. Sets the proposal
+  // to `info_requested`, stores the vendor's question, and notifies the customer
+  // (userId) so they see it in notifications and on the request.
+  Future<String?> vendorRequestMoreInfo(String proposalId, String question) async {
+    try {
+      final proposalDoc = await _firestore.collection('proposals').doc(proposalId).get();
+      final proposalData = proposalDoc.data();
+
+      if (proposalData == null) {
+        return 'Proposal not found';
+      }
+
+      await _firestore.collection('proposals').doc(proposalId).update({
+        'status': 'info_requested',
+        'vendorReply': question,
+        'respondedAt': FieldValue.serverTimestamp(),
+      });
+
+      // Notify the customer (event owner).
+      await _firestore.collection('notifications').add({
+        'userId': proposalData['userId'],
+        'type': 'vendor_info_requested',
+        'title': 'Vendor needs more info',
+        'message': '${proposalData['vendorName']} asked for more details about ${proposalData['eventName']}: $question',
+        'eventId': proposalData['eventId'],
+        'proposalId': proposalId,
+        'isRead': false,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      return null;
+    } catch (e) {
+      return 'Failed to request more info: $e';
+    }
+  }
+
   Future<String?> vendorRejectOffer(String proposalId, String? reason) async {
     try {
       final proposalDoc = await _firestore.collection('proposals').doc(proposalId).get();
