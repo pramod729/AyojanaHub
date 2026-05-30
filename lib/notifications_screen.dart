@@ -96,7 +96,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 : _notifications.isEmpty
                     ? ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
-                        children: const [SizedBox(height: 120), Center(child: Text('No notifications yet.', style: TextStyle(fontSize: 16))), SizedBox(height: 12), Center(child: Text('Pull down to refresh.'))],
+                        children: const [SizedBox(height: 120), Center(child: Text('No notifications yet.', style: TextStyle(fontSize: 16, color: Colors.black87))), SizedBox(height: 12), Center(child: Text('Pull down to refresh.', style: TextStyle(color: Colors.black54)))],
                       )
                     : ListView.builder(
                         itemCount: _notifications.length,
@@ -107,10 +107,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             child: ListTile(
                               tileColor: item.isRead ? Colors.white : const Color(0xFFf2f4ff),
                               leading: Icon(item.icon, color: const Color(0xFF6C63FF)),
-                              title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.w600)),
+                              title: Text(
+                                item.title,
+                                style: const TextStyle(fontWeight: FontWeight.w700, color: Colors.black87),
+                              ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [Text(item.message), const SizedBox(height: 4), Text(item.subtitle, style: const TextStyle(fontSize: 12, color: Colors.black54))],
+                                children: [
+                                  Text(item.message, style: const TextStyle(color: Colors.black87, fontSize: 14, height: 1.4)),
+                                  const SizedBox(height: 6),
+                                  Text(item.subtitle, style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                                ],
                               ),
                               trailing: item.isRead ? null : const Icon(Icons.circle, size: 10, color: Color(0xFF6C63FF)),
                               onTap: () async {

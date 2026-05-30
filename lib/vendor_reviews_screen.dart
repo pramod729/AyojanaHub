@@ -75,30 +75,7 @@ class _VendorReviewsScreenState extends State<VendorReviewsScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                if (error != null) ...[
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.card,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.error_outline, color: AppColors.error),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'Unable to load reviews. Pull down to refresh.',
-                            style: TextStyle(color: AppColors.textLight, fontSize: 14),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
+                // Error message removed per request: silently allow pull-to-refresh instead
                 if (reviews.isEmpty)
                   const Column(
                     children: [

@@ -268,7 +268,7 @@ class _HomeTabState extends State<HomeTab> {
             ),
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
+            onPressed: () => Navigator.pushNamed(context, '/notifications'),
             tooltip: 'Notifications',
           ),
         ],
