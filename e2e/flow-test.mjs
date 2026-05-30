@@ -144,5 +144,47 @@ console.log('9) Customer sees the booking (bookings where customerId == my uid)'
 const custBookings = await query(customer.tok, 'bookings', [eq('customerId', customer.uid)]);
 ok(custBookings.some((b) => b.id === bookingId), 'customer sees their booking');
 
+// A fresh direct customer->vendor request to exercise vendor actions on.
+const freshRequest = () => add('proposals', customer.tok, {
+  eventId, eventName: 'Sita & Ram Wedding', eventType: 'Wedding',
+  userId: customer.uid, vendorId: vendorCat.uid, vendorName: 'Everest Catering Co.',
+  vendorCategory: 'Catering', proposedPrice: 0, description: 'Please quote for 300 pax.',
+  servicesIncluded: ['Catering'], deliveryTime: 'Event day', status: 'requested',
+  createdAt: new Date(), userMessage: 'Please quote for 300 pax.',
+});
+const custNotifIds = async () => (await query(customer.tok, 'notifications', [eq('userId', customer.uid)])).map((n) => n.id);
+
+console.log('\n10) Vendor REQUESTS MORE INFO -> customer is notified + status visible');
+const reqInfo = await freshRequest();
+await patch(`proposals/${reqInfo}`, vendorCat.tok, { status: 'info_requested', vendorReply: 'How many guests need catering, and any dietary needs?', respondedAt: new Date() });
+const infoNotif = await add('notifications', vendorCat.tok, {
+  userId: customer.uid, type: 'vendor_info_requested', title: 'Vendor needs more info',
+  message: 'Everest Catering Co. asked for more details about Sita & Ram Wedding',
+  eventId, proposalId: reqInfo, isRead: false, createdAt: new Date(),
+});
+ok((await custNotifIds()).includes(infoNotif), 'customer receives the "needs more info" notification');
+const infoSeen = (await query(customer.tok, 'proposals', [eq('userId', customer.uid)])).find((p) => p.id === reqInfo);
+ok(infoSeen?.status === 'info_requested', 'customer sees proposal status: info_requested (with the question)');
+
+console.log('\n11) Vendor REJECTS the offer -> customer is notified');
+const reqRej = await freshRequest();
+await patch(`proposals/${reqRej}`, vendorCat.tok, { status: 'vendor_rejected', vendorReply: 'Sorry, fully booked that date.', respondedAt: new Date() });
+const rejNotif = await add('notifications', vendorCat.tok, {
+  userId: customer.uid, type: 'vendor_rejected_offer', title: 'Offer Update',
+  message: 'Everest Catering Co. has declined your offer for Sita & Ram Wedding',
+  eventId, proposalId: reqRej, isRead: false, createdAt: new Date(),
+});
+ok((await custNotifIds()).includes(rejNotif), 'customer receives the rejection notification');
+
+console.log('\n12) Vendor ACCEPTS the offer -> customer is notified');
+const reqAcc = await freshRequest();
+await patch(`proposals/${reqAcc}`, vendorCat.tok, { status: 'vendor_accepted', respondedAt: new Date() });
+const accNotif = await add('notifications', vendorCat.tok, {
+  userId: customer.uid, type: 'vendor_accepted_offer', title: 'Offer Accepted!',
+  message: 'Everest Catering Co. has accepted your offer for Sita & Ram Wedding',
+  eventId, proposalId: reqAcc, isRead: false, createdAt: new Date(),
+});
+ok((await custNotifIds()).includes(accNotif), 'customer receives the acceptance notification');
+
 console.log(`\n=== RESULT: ${pass} passed, ${fail} failed ===`);
 process.exit(fail === 0 ? 0 : 1);
