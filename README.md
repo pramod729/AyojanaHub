@@ -1,195 +1,147 @@
 # Ayojana Hub
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.x-blue?logo=flutter)](https://flutter.dev)
-[![Firebase](https://img.shields.io/badge/Firebase-Firestore-orange?logo=firebase)](https://firebase.google.com)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
-
-A modern event planning and vendor management platform built with Flutter. Connect event organizers with service vendors through a competitive proposal system.
-
----
-
-## 🎯 About
-
-Ayojana Hub is a mobile-first marketplace that streamlines event planning:
-- **Customers** create events and receive competitive proposals from vendors
-- **Vendors** discover event opportunities and submit service proposals
-- **Admin** manages users, analytics, and platform operations
+Ayojana Hub is an event‑planning marketplace built with **Flutter** and **Firebase**.
+Customers create events and request proposals; vendors (catering, photography,
+decoration, DJ & music, venue, planning) receive matching opportunities, submit
+quotes, negotiate, and — once a customer accepts — a booking is created.
 
 ---
 
-## ✨ Key Features
+## Tech stack
 
-### Customers
-- Create events with automatic service matching
-- Browse and compare vendor proposals
-- Accept proposals and manage bookings
-- Track event history and notifications
-
-### Vendors
-- Discover matching event opportunities
-- Submit competitive proposals
-- Manage bookings and track proposals
-- Maintain vendor profile and services
-
-### Admin
-- Manage users (customers, vendors, admins)
-- View analytics and platform metrics
-- Monitor bookings and events
-- Manage activity logs
-
-### General
-- Real-time notifications
-- User activity tracking
-- Responsive design (Android/iOS)
-- Smooth animations and modern UI
+| Layer | Technology |
+|------|------------|
+| App | Flutter 3.32 (Material, Provider state management) |
+| Auth | Firebase Authentication (email/password) |
+| Database | Cloud Firestore |
+| Storage | Firebase Storage |
+| Messaging | Firebase Cloud Messaging + local notifications |
+| Payments | Razorpay |
+| Project | `ayojana-hub` |
 
 ---
 
-## 🚀 Quick Start
+## Roles & core flow
 
-### Prerequisites
-- Flutter 3.0.0+
-- Dart 3.0.0+
-- Firebase project
-- Git
-
-### Installation
-
-1. **Clone Repository**
-```bash
-git clone https://github.com/pramod729/AyojanaHub.git
-cd AyojanaHub
+```
+CUSTOMER                         VENDOR
+   │ create event (status: awaiting_proposals)
+   │        └── matched vendors notified by category ──►│ Event Opportunities
+   │                                                     │ submit proposal (price, services)
+   │ Event ► Proposals  ◄──────────── proposal ─────────┤
+   │ negotiate / accept                                  │
+   │        └── booking created (status: confirmed) ────►│ My Bookings
 ```
 
-2. **Install Dependencies**
+- **Event** — created by a customer; holds the required service categories.
+- **Proposal** — a vendor's quote for an event (or a customer's direct request to a vendor).
+- **Booking** — created when a customer accepts a proposal; all other proposals on that event are auto‑rejected.
+
+---
+
+## Data model (Firestore)
+
+| Collection | Doc id | Key fields |
+|-----------|--------|-----------|
+| `users` | `{uid}` | `role` (`customer`/`vendor`/`admin`), name, email, phone, vendor profile fields |
+| `vendors` | `{uid}` | `userId` (= uid), name, category, services, rating, location |
+| `events` | auto | `userId` (owner), eventName, requiredServices[], status, budget |
+| `proposals` | auto | `userId` (event owner), `vendorId` (vendor uid), status, proposedPrice |
+| `bookings` | auto | `customerId`, `vendorId`, eventId, proposalId, price, status |
+| `notifications` | auto | `userId` (recipient), type, message |
+| `conversations` / `messages` | auto | customer/vendor chat |
+
+**Identity rule:** the **Firebase Auth uid is the single canonical key** everywhere.
+`users` and `vendors` documents use the uid as their id, and every cross‑entity
+reference (`userId`, `vendorId`, `customerId`) stores a uid. This keeps the data,
+the queries, and the Firestore security rules consistent.
+
+---
+
+## Firestore security & indexes
+
+- Rules live in [`firestore.rules`](firestore.rules); composite indexes in
+  [`firestore.indexes.json`](firestore.indexes.json).
+- Deploy with:
+
+  ```bash
+  firebase deploy --only firestore:rules,firestore:indexes --project ayojana-hub
+  ```
+
+Because Firestore evaluates list queries against the rules (rules are **not**
+filters), list queries are always constrained by the field the rule authorises:
+vendors read proposals `where('vendorId', '==', myUid)`, and customers read the
+proposals on their event `where('userId', '==', myUid)` (every proposal on an
+event carries the owner's `userId`), filtering the event client‑side.
+
+---
+
+## Running the app
+
 ```bash
 flutter pub get
+flutter run                 # device/emulator
+flutter run -d chrome       # web
+flutter build web --release # production web build (output: build/web)
 ```
 
-3. **Configure Firebase**
-   - Create Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
-   - Add Android and iOS apps
-   - Download configuration files:
-     - `google-services.json` (Android) → `android/app/`
-     - `GoogleService-Info.plist` (iOS) → `ios/Runner/`
+---
 
-4. **Run App**
+## Test credentials
+
+Seed the project with `e2e/seed.mjs` (creates the Auth users + Firestore
+profiles). All passwords are `Test@1234`.
+
+| Role | Email |
+|------|-------|
+| Admin | `admin@ayojanahub.test` |
+| Customer | `customer@ayojanahub.test` |
+| Vendor (Catering) | `catering@ayojanahub.test` |
+| Vendor (Photography) | `photo@ayojanahub.test` |
+| Vendor (Decoration) | `decor@ayojanahub.test` |
+
 ```bash
-flutter run
+cd e2e
+npm install            # playwright
+node seed.mjs          # create test accounts + vendor profiles
 ```
 
 ---
 
-## 🏗 Architecture
+## End‑to‑end tests (`e2e/`)
 
-### User Roles
-- **Customer**: Creates events, receives proposals, manages bookings
-- **Vendor**: Submits proposals, manages services, tracks bookings
-- **Admin**: Manages platform, users, and analytics
+The `e2e/` folder contains a Playwright + Node harness (git‑ignored build
+artifacts):
 
-### Data Models
-- **User**: Authentication, profile, role management
-- **Event**: Event details with required services
-- **Proposal**: Vendor proposals for events
-- **Booking**: Confirmed bookings linking customers and vendors
-- **Notification**: System notifications for users
+| Script | Purpose |
+|--------|---------|
+| `flow-test.mjs` | Data‑layer e2e: drives the real Firestore collections/queries/rules as the seeded users and asserts the full event → proposal → vendor → quote → accept → booking lifecycle. |
+| `demo.mjs` | UI e2e: drives the live web app (Flutter canvas via the accessibility tree) and records a video of the full journey. Run visibly with `HEADED=1`. |
 
-### Firebase Collections
-```
-users/          → User profiles and roles
-events/         → Event listings
-proposals/      → Vendor proposals
-bookings/       → Confirmed bookings
-notifications/  → User notifications
-activityLogs/   → Activity tracking
+```bash
+cd e2e
+node flow-test.mjs                       # data-layer assertions
+HEADED=1 URL=http://localhost:8080 node demo.mjs   # visible UI demo + video (serve build/web first)
 ```
 
----
+To serve the web build for the UI demo:
 
-## 🛠 Tech Stack
-
-**Frontend**
-- Flutter & Dart
-- Provider (state management)
-- Material Design 3
-
-**Backend**
-- Firebase Authentication
-- Cloud Firestore
-- Firebase Storage
-
-**UI Components**
-- Google Fonts
-- Custom theme system
-- Material icons
-
----
-
-## 📁 Project Structure
-
-```
-lib/
-├── models/              # Data models (User, Event, Booking, etc.)
-├── providers/           # State management (Auth, Booking, etc.)
-├── screens/             # UI screens
-├── services/            # API and service classes
-├── theme/               # App theme and styling
-└── main.dart           # App entry point
+```bash
+python3 -m http.server 8080 --directory build/web
 ```
 
----
-
-## 🔄 User Workflows
-
-### Customer Flow
-1. Register → Create Event → Vendors Submit Proposals → Accept Best Proposal → Booking Confirmed
-
-### Vendor Flow
-1. Register → Setup Profile → Browse Opportunities → Submit Proposal → Await Decision → Confirmed Booking
-
-### Auto-Matching
-When event is created, system automatically notifies matching vendors based on service categories.
+> Flutter web renders to a canvas. The app calls `SemanticsBinding.ensureSemantics()`
+> on web at startup so the accessibility DOM (labels, inputs) is always present —
+> an accessibility win that also makes the UI automatable.
 
 ---
 
-## 📱 Main Screens
+## Notable fixes
 
-**Authentication**: Login, Register, Forgot Password
-
-**Customer**: Home, Create Event, My Events, My Bookings, Profile
-
-**Vendor**: Dashboard, Opportunities, My Proposals, My Bookings, Profile
-
-**Admin**: Dashboard, Users, Vendors, Bookings, Events, Analytics
-
-**Shared**: Notifications, Help & Support, About, AI Assistant
-
----
-
-## 🔐 Security
-
-- Firebase Authentication for secure login
-- Role-based access control (RBAC)
-- Firestore Security Rules
-- Data validation on client and server
-
----
-
-## 📋 License
-
-MIT License - Building an open, collaborative event platform
-
----
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
----
-
-
-Made with ❤️ using Flutter
+- **Proposal requests now reach vendors.** Proposals are keyed by the vendor's
+  auth uid consistently (write + read + rules), and accountless seed vendors were
+  removed so requests always target a real vendor account.
+- **Customer proposal views & accept flow** use rule‑safe queries (`userId`‑based)
+  instead of `eventId`‑only queries that Firestore rejected.
+- **Vendor directory** (`vendors/{uid}`) stays in sync when a vendor edits their
+  profile; opportunities and notifications are matched by service category.

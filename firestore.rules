@@ -60,9 +60,13 @@ service cloud.firestore {
       allow create, update: if request.auth != null;
     }
 
-    // Notifications - Allow read/write for authenticated users
+    // Notifications - recipient is stored as `userId` by most writers and as
+    // `recipientId` by the messaging path; allow either so the owner can read.
     match /notifications/{notificationId} {
-      allow read: if request.auth != null && (request.auth.uid == resource.data.recipientId || isAdmin());
+      allow read: if request.auth != null &&
+        (request.auth.uid == resource.data.userId ||
+         request.auth.uid == resource.data.recipientId ||
+         isAdmin());
       allow create, update: if request.auth != null;
     }
 

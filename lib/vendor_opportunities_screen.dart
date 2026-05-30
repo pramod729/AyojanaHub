@@ -57,9 +57,14 @@ class _VendorOpportunitiesScreenState extends State<VendorOpportunitiesScreen> {
           .orderBy('createdAt', descending: true)
           .get();
 
+      final vendorCategory = userModel?.vendorCategory;
       _matchingEvents = snapshot.docs
           .map((doc) => EventModel.fromMap(doc.data(), doc.id))
           .where((event) => !_rejectedEventIds.contains(event.id))
+          .where((event) =>
+              vendorCategory == null ||
+              event.requiredServices.isEmpty ||
+              event.requiredServices.contains(vendorCategory))
           .toList();
     } catch (e) {
       // Error loading events

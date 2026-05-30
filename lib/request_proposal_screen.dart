@@ -96,6 +96,25 @@ class _RequestProposalScreenState extends State<RequestProposalScreen> {
       return;
     }
 
+    // A proposal can only reach a vendor that has a real account. The vendor's
+    // Firebase Auth uid (vendor.userId) is the single identifier used by the
+    // vendor dashboard query and the Firestore security rules. Seeded/catalog
+    // vendors have no account (userId == null) and cannot receive requests, so
+    // we block instead of silently storing an undeliverable proposal.
+    final vendorAuthId = widget.vendor.userId;
+    if (vendorAuthId == null || vendorAuthId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'This vendor has not activated an account yet, so it cannot receive '
+            'proposal requests. Please choose a registered vendor.',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isSubmitting = true;
     });
@@ -106,9 +125,7 @@ class _RequestProposalScreenState extends State<RequestProposalScreen> {
       eventName: _selectedEvent!.eventName,
       eventType: _selectedEvent!.eventType,
       userId: currentUser.uid,
-      vendorId: (widget.vendor.userId != null && widget.vendor.userId!.isNotEmpty)
-          ? widget.vendor.userId!
-          : widget.vendor.id,
+      vendorId: vendorAuthId,
       vendorName: widget.vendor.name,
       vendorCategory: widget.vendor.category,
       proposedPrice: double.tryParse(_priceController.text.trim()) ?? 0,

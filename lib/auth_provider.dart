@@ -420,6 +420,20 @@ class AuthProvider with ChangeNotifier {
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
+      // Keep the customer-facing vendor directory (vendors/{uid}) in sync so a
+      // profile edit is immediately reflected where customers browse vendors.
+      await _firestore.collection('vendors').doc(_user!.uid).set({
+        'userId': _user!.uid,
+        'name': businessName.trim(),
+        'category': category,
+        'description': description.trim(),
+        'location': location.trim(),
+        'services': services,
+        'email': _user!.email ?? '',
+        'phone': _userModel?.phone ?? '',
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
       await _loadUserData();
       return null;
     } catch (e) {

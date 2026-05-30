@@ -13,20 +13,29 @@ class ProposalProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  Future<void> loadProposalsForEvent(String eventId) async {
+  // Loads the proposals on a single event for the event owner (customer).
+  // Every proposal on an event carries userId == the event owner, and the
+  // Firestore read rule authorises proposals by userId/vendorId — so we MUST
+  // query by userId (rule-safe) and filter the event client-side. Querying by
+  // eventId alone is rejected with permission-denied.
+  Future<void> loadProposalsForEvent(String eventId, {String? ownerUserId}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
     try {
-      final snapshot = await _firestore
-          .collection('proposals')
-          .where('eventId', isEqualTo: eventId)
-          .orderBy('createdAt', descending: true)
-          .get();
+      Query<Map<String, dynamic>> query = _firestore.collection('proposals');
+      if (ownerUserId != null && ownerUserId.isNotEmpty) {
+        query = query.where('userId', isEqualTo: ownerUserId);
+      } else {
+        query = query.where('eventId', isEqualTo: eventId);
+      }
+      final snapshot = await query.get();
 
       _proposals = snapshot.docs
           .map((doc) => ProposalModel.fromMap(doc.data(), doc.id))
-          .toList();
+          .where((p) => p.eventId == eventId)
+          .toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } catch (e) {
       _error = 'Failed to load proposals: $e';
     }
@@ -35,58 +44,26 @@ class ProposalProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadProposalsForVendor(String vendorUserId, {String? vendorDocId}) async {
+  Future<void> loadProposalsForVendor(String vendorUserId) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      final proposals = <ProposalModel>[];
-
-      final firstQuery = await _firestore
+      // A proposal is always stored with vendorId == the vendor's Firebase Auth
+      // uid, which is also what the Firestore security rules enforce
+      // (request.auth.uid == resource.data.vendorId). Querying by anything else
+      // (e.g. the vendors-collection document id) is rejected with
+      // permission-denied, so we query by the auth uid only.
+      final snapshot = await _firestore
           .collection('proposals')
           .where('vendorId', isEqualTo: vendorUserId)
           .orderBy('createdAt', descending: true)
           .get();
 
-      try {
-        // ignore: avoid_print
-        print('loadProposalsForVendor: firstQuery found ${firstQuery.docs.length} docs for vendorUserId=$vendorUserId');
-      } catch (_) {}
-
-      proposals.addAll(firstQuery.docs
-          .map((doc) => ProposalModel.fromMap(doc.data() as Map<String, dynamic>, doc.id))
-          .toList());
-
-      if (vendorDocId != null && vendorDocId.isNotEmpty && vendorDocId != vendorUserId) {
-        final secondQuery = await _firestore
-            .collection('proposals')
-            .where('vendorId', isEqualTo: vendorDocId)
-            .orderBy('createdAt', descending: true)
-            .get();
-
-        try {
-          // ignore: avoid_print
-          print('loadProposalsForVendor: secondQuery found ${secondQuery.docs.length} docs for vendorDocId=$vendorDocId');
-        } catch (_) {}
-
-        proposals.addAll(secondQuery.docs
-            .map((doc) => ProposalModel.fromMap(doc.data() as Map<String, dynamic>, doc.id))
-            .toList());
-      }
-
-      final uniqueProposals = <String, ProposalModel>{};
-      for (var proposal in proposals) {
-        uniqueProposals[proposal.id] = proposal;
-      }
-
-      _proposals = uniqueProposals.values.toList()
-        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-      try {
-        // ignore: avoid_print
-        print('loadProposalsForVendor: loaded ${_proposals.length} unique proposals: ${_proposals.map((p) => p.id).toList()}');
-      } catch (_) {}
+      _proposals = snapshot.docs
+          .map((doc) => ProposalModel.fromMap(doc.data(), doc.id))
+          .toList();
     } catch (e) {
       _error = 'Failed to load proposals: $e';
       _proposals = [];
@@ -208,14 +185,17 @@ class ProposalProvider with ChangeNotifier {
         },
       );
 
+      // Reject every other proposal on this event once one is accepted.
+      // Query by the event owner's userId (rule-safe) and match the event
+      // client-side — a query by eventId alone is rejected by the read rule.
+      final ownerId = proposalData['userId'];
       final proposalsSnapshot = await _firestore
           .collection('proposals')
-          .where('eventId', isEqualTo: eventId)
-          .where('status', isEqualTo: 'pending')
+          .where('userId', isEqualTo: ownerId)
           .get();
 
       for (var doc in proposalsSnapshot.docs) {
-        if (doc.id != proposalId) {
+        if (doc.id != proposalId && doc.data()['eventId'] == eventId) {
           batch.update(doc.reference, {
             'status': 'rejected',
             'respondedAt': FieldValue.serverTimestamp(),

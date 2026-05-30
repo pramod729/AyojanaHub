@@ -30,6 +30,7 @@ import 'package:ayojana_hub/notifications_screen.dart';
 import 'package:ayojana_hub/help_support_screen.dart';
 import 'package:ayojana_hub/about_screen.dart';
 import 'package:ayojana_hub/conversations_list_screen.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -37,8 +38,15 @@ import 'package:ayojana_hub/admin_provider.dart';
 import 'package:ayojana_hub/admin_analytics_screen.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
+  final binding = WidgetsFlutterBinding.ensureInitialized();
+
+  // On web, force Flutter's semantics tree on at startup. This emits a real
+  // accessible DOM (inputs, buttons, labels) — both an accessibility win and
+  // what lets automated browser tooling drive the canvas-rendered UI.
+  if (kIsWeb) {
+    binding.ensureSemantics();
+  }
+
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,

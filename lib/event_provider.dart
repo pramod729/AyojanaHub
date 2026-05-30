@@ -81,6 +81,14 @@ class EventProvider with ChangeNotifier {
 
       final batch = _firestore.batch();
       for (var userDoc in usersSnapshot.docs) {
+        // Only notify vendors whose category is one of the services this event
+        // needs. If the event lists no specific services, notify all vendors.
+        final vendorCategory = (userDoc.data()['vendorCategory'] ?? '') as String;
+        if (event.requiredServices.isNotEmpty &&
+            vendorCategory.isNotEmpty &&
+            !event.requiredServices.contains(vendorCategory)) {
+          continue;
+        }
         final notificationRef = _firestore.collection('notifications').doc();
         batch.set(notificationRef, {
           'userId': userDoc.id,

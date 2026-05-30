@@ -23,7 +23,10 @@ class _EventProposalsScreenState extends State<EventProposalsScreen> {
 
   Future<void> _loadProposals() async {
     final proposalProvider = Provider.of<ProposalProvider>(context, listen: false);
-    await proposalProvider.loadProposalsForEvent(widget.event.id);
+    await proposalProvider.loadProposalsForEvent(
+      widget.event.id,
+      ownerUserId: widget.event.userId,
+    );
   }
 
   @override
