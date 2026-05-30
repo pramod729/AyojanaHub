@@ -53,7 +53,7 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.event_busy,
                     size: 80,
                     color: AppColors.iconInactive,
@@ -151,7 +151,7 @@ class _EventCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: AppColors.border, width: 1),
+        side: const BorderSide(color: AppColors.border, width: 1),
       ),
       child: InkWell(
         onTap: () {
@@ -185,7 +185,7 @@ class _EventCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(event.status).withOpacity(0.1),
+                      color: _getStatusColor(event.status).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -244,7 +244,7 @@ class _EventCard extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.mail, size: 18, color: AppColors.gold),
+                      const Icon(Icons.mail, size: 18, color: AppColors.gold),
                       const SizedBox(width: 8),
                       Text(
                         '${event.proposalCount} proposal${event.proposalCount > 1 ? 's' : ''} received',

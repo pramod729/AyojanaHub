@@ -72,7 +72,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     // Use vendor's userId (auth UID) instead of vendor document ID
     final vendorAuthUid = widget.vendor.userId ?? widget.vendor.id;
     
-    print('DEBUG: Creating booking with vendorId: $vendorAuthUid (userId: ${widget.vendor.userId}, id: ${widget.vendor.id})');
+    debugPrint('DEBUG: Creating booking with vendorId: $vendorAuthUid (userId: ${widget.vendor.userId}, id: ${widget.vendor.id})');
     
     final booking = BookingModel(
       id: '',
@@ -303,7 +303,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                     // Budget
                     TextFormField(
                       controller: _budgetController,
-                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       decoration: InputDecoration(
                         labelText: 'Budget (NPR)',
                         hintText: 'e.g., 50000',

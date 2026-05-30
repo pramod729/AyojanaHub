@@ -18,7 +18,6 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final accent = theme.primaryColor;
-    final cardColor = theme.cardColor;
     final textColor = theme.textTheme.bodyLarge?.color ?? Colors.white;
 
     return Scaffold(
@@ -65,7 +64,7 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                           borderRadius: BorderRadius.circular(40),
                           boxShadow: [
                             BoxShadow(
-                              color: accent.withOpacity(0.25),
+                              color: accent.withValues(alpha: 0.25),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -95,7 +94,7 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: accent.withOpacity(0.14),
+                          color: accent.withValues(alpha: 0.14),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -154,7 +153,7 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                                   width: 40,
                                   height: 40,
                                   decoration: BoxDecoration(
-                                    color: accent.withOpacity(0.14),
+                                    color: accent.withValues(alpha: 0.14),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Icon(
@@ -194,7 +193,7 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                                   width: 40,
                                   height: 40,
                                   decoration: BoxDecoration(
-                                    color: accent.withOpacity(0.14),
+                                    color: accent.withValues(alpha: 0.14),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Icon(
@@ -224,10 +223,10 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                                           vertical: 6,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: accent.withOpacity(0.14),
+                                          color: accent.withValues(alpha: 0.14),
                                           borderRadius: BorderRadius.circular(20),
                                           border: Border.all(
-                                            color: accent.withOpacity(0.22),
+                                            color: accent.withValues(alpha: 0.22),
                                           ),
                                         ),
                                         child: Text(
@@ -408,7 +407,6 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -417,7 +415,7 @@ class _InfoCard extends StatelessWidget {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.12),
+            color: Colors.black.withValues(alpha: 0.12),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -454,7 +452,7 @@ class _InfoItem extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: accent.withOpacity(0.14),
+            color: accent.withValues(alpha: 0.14),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(
@@ -520,7 +518,7 @@ class _ActionButton extends StatelessWidget {
           border: Border.all(color: AppColors.border),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -532,7 +530,7 @@ class _ActionButton extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.14),
+                color: color.withValues(alpha: 0.14),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
@@ -554,7 +552,7 @@ class _ActionButton extends StatelessWidget {
             Icon(
               Icons.arrow_forward_ios,
               size: 16,
-              color: theme.textTheme.bodySmall?.color?.withOpacity(0.75),
+              color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.75),
             ),
           ],
         ),

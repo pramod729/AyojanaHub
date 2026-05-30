@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
         borderRadius: BorderRadius.circular(12.0),
         borderSide: BorderSide(color: Colors.red.shade400, width: 2.0),
       ),
-      hintStyle: TextStyle(color: Colors.white54),
+      hintStyle: const TextStyle(color: Colors.white54),
     );
   }
 
@@ -126,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: 760),
+                constraints: const BoxConstraints(maxWidth: 760),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -175,9 +175,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             const SizedBox(height: 18.0),
 
                             // Secure Login hint
-                            Row(
+                            const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
+                              children: [
                                 Icon(Icons.lock_outline, color: Colors.white54, size: 16),
                                 SizedBox(width: 6),
                                 Text('Secure Login', style: TextStyle(color: Colors.white54, fontSize: 12)),
@@ -283,7 +283,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           Navigator.of(context).pushNamed('/register');
                                         },
                                         style: OutlinedButton.styleFrom(
-                                          side: BorderSide(color: Colors.white24),
+                                          side: const BorderSide(color: Colors.white24),
                                           padding: const EdgeInsets.symmetric(vertical: 14.0),
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                                         ),
@@ -315,8 +315,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     const SizedBox(height: 18.0),
                     // Footer
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6.0),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 6.0),
                       child: Text('© 2026 Ayojana Hub', style: TextStyle(color: Colors.white54, fontSize: 12)),
                     ),
                   ],

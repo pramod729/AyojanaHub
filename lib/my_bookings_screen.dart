@@ -296,7 +296,7 @@ class _BookingCard extends StatelessWidget {
         border: Border.all(color: AppColors.border, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -367,7 +367,7 @@ class _BookingCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(booking.status).withOpacity(0.1),
+                      color: _getStatusColor(booking.status).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -468,11 +468,11 @@ class _BookingCard extends StatelessWidget {
                       color: AppColors.iconBackground,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.star, size: 16, color: Colors.amber),
-                        const SizedBox(width: 8),
+                        Icon(Icons.star, size: 16, color: Colors.amber),
+                        SizedBox(width: 8),
                         Text(
                           'Reviewed',
                           style: TextStyle(color: AppColors.textLight),

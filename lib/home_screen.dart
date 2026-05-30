@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
+              color: Colors.black.withValues(alpha: 0.15),
               blurRadius: 8,
               offset: const Offset(0, -2),
             ),
@@ -176,7 +176,7 @@ class _HomeTabState extends State<HomeTab> {
 
       final vendors = vendorsSnapshot.docs
           .map((doc) => VendorModel.fromMap(
-                doc.data() as Map<String, dynamic>,
+                doc.data(),
                 doc.id,
               ))
           .where((vendor) {
@@ -193,7 +193,7 @@ class _HomeTabState extends State<HomeTab> {
 
       final events = eventsSnapshot.docs
           .map((doc) => EventModel.fromMap(
-                doc.data() as Map<String, dynamic>,
+                doc.data(),
                 doc.id,
               ))
           .where((event) {
@@ -322,7 +322,7 @@ class _HomeTabState extends State<HomeTab> {
             _buildSectionSpacing(),
 
             // Section: Quick Actions
-            QuickActionsSection(),
+            const QuickActionsSection(),
 
             _buildSectionSpacing(),
 
@@ -395,7 +395,7 @@ class GreetingCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -638,10 +638,10 @@ class UpcomingEventCard extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(0.08),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: Theme.of(context).primaryColor.withOpacity(0.3),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
               width: 1.5,
             ),
           ),
@@ -651,7 +651,7 @@ class UpcomingEventCard extends StatelessWidget {
               Icon(
                 Icons.event_available,
                 size: 48,
-                color: Theme.of(context).primaryColor.withOpacity(0.6),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.6),
               ),
               const SizedBox(height: 12),
               Text(
@@ -688,10 +688,10 @@ class UpcomingEventCard extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor.withOpacity(0.08),
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: Theme.of(context).primaryColor.withOpacity(0.3),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
             width: 1.5,
           ),
         ),
@@ -835,10 +835,10 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -970,7 +970,7 @@ class _QuickActionCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 4,
               offset: const Offset(0, 1),
             ),
@@ -982,7 +982,7 @@ class _QuickActionCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
+                color: color.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -1120,7 +1120,7 @@ class _CategoryCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
+                color: color.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
@@ -1269,7 +1269,7 @@ class _ServiceCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
@@ -1474,7 +1474,7 @@ class _PackageCard extends StatelessWidget {
                 ],
               ),
             );
-          }).toList(),
+          }),
           const SizedBox(height: 16),
           // View Details Button
           SizedBox(

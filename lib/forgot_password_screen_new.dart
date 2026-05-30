@@ -73,7 +73,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Single
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.3),
+      barrierColor: Colors.black.withValues(alpha: 0.3),
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surface,
         elevation: 8,
@@ -85,7 +85,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Single
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.1),
+                color: AppColors.error.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppDimensions.radiusM),
               ),
               child: const Icon(Icons.error_outline_rounded, color: AppColors.error),
@@ -148,7 +148,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> with Single
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Header with Back Button
-        AuthPageHeader(
+        const AuthPageHeader(
           title: 'Reset Password',
           subtitle: 'Enter your email address and we\'ll send you a link to reset your password',
           showBackButton: true,

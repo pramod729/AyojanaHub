@@ -67,7 +67,7 @@ class _VendorReviewsScreenState extends State<VendorReviewsScreen> {
                               style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(width: 12),
-                            Text('${widget.vendor.reviewCount} reviews', style: TextStyle(color: AppColors.textSecondary)),
+                            Text('${widget.vendor.reviewCount} reviews', style: const TextStyle(color: AppColors.textSecondary)),
                           ],
                         ),
                       ],
@@ -84,8 +84,8 @@ class _VendorReviewsScreenState extends State<VendorReviewsScreen> {
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: AppColors.border),
                     ),
-                    child: Row(
-                      children: const [
+                    child: const Row(
+                      children: [
                         Icon(Icons.error_outline, color: AppColors.error),
                         SizedBox(width: 12),
                         Expanded(
@@ -100,10 +100,10 @@ class _VendorReviewsScreenState extends State<VendorReviewsScreen> {
                   const SizedBox(height: 12),
                 ],
                 if (reviews.isEmpty)
-                  Column(
+                  const Column(
                     children: [
                       Icon(Icons.star_outline, size: 80, color: AppColors.textSecondary),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       Text(
                         'No reviews yet for this vendor.',
                         style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
@@ -150,12 +150,12 @@ class _VendorReviewsScreenState extends State<VendorReviewsScreen> {
                         const SizedBox(height: 10),
                         Text(
                           review.createdAt.toLocal().toString().split('.').first,
-                          style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                          style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
                         ),
                       ],
                     ),
                   );
-                }).toList(),
+                }),
               ],
             ),
           );

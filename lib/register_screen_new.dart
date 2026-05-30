@@ -108,7 +108,7 @@ class _RegisterScreenState extends State<RegisterScreen>
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.3),
+      barrierColor: Colors.black.withValues(alpha: 0.3),
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surface,
         elevation: 8,
@@ -120,7 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen>
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.1),
+                color: AppColors.error.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppDimensions.radiusM),
               ),
               child: const Icon(Icons.error_outline_rounded,

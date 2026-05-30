@@ -15,8 +15,6 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   int _unreadNotificationCount = 0;
-  bool _isLoadingNotifications = false;
-  String? _notificationError;
 
   @override
   void initState() {
@@ -31,11 +29,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return;
     }
 
-    setState(() {
-      _isLoadingNotifications = true;
-      _notificationError = null;
-    });
-
     try {
       final snapshot = await FirebaseFirestore.instance
           .collection('notifications')
@@ -49,17 +42,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     } catch (e) {
       debugPrint('Unread notifications load error: $e');
-      if (mounted) {
-        setState(() {
-          _notificationError = 'Unable to load unread notifications';
-        });
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoadingNotifications = false;
-        });
-      }
     }
   }
 
@@ -113,7 +95,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 final error = await authProvider.updateProfile(name: nameController.text.trim(), phone: phoneController.text.trim());
                 if (context.mounted) {
                   Navigator.pop(context);
-                  if (error == null) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profile updated successfully'))); else ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+                  if (error == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profile updated successfully')));
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+                  }
                 }
               }
             },
@@ -155,9 +141,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       final scaffold = ScaffoldMessenger.of(context);
                       scaffold.showSnackBar(const SnackBar(content: Text('Uploading photo...')));
                       final error = await auth.updateProfilePhoto(previewFile);
-                      if (error == null) scaffold.showSnackBar(const SnackBar(content: Text('Profile photo updated'))); else scaffold.showSnackBar(SnackBar(content: Text(error)));
+                      if (error == null) {
+                        scaffold.showSnackBar(const SnackBar(content: Text('Profile photo updated')));
+                      } else {
+                        scaffold.showSnackBar(SnackBar(content: Text(error)));
+                      }
                     },
-                    child: Container(padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 6)]), child: const Icon(Icons.edit, color: Color(0xFF6C63FF), size: 18)),
+                    child: Container(padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 6)]), child: const Icon(Icons.edit, color: Color(0xFF6C63FF), size: 18)),
                   ),
                 ]),
                 const SizedBox(height: 16),
@@ -215,7 +205,7 @@ class _ProfileOption extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: ListTile(
-        leading: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: const Color(0xFF6C63FF).withOpacity(0.1), borderRadius: BorderRadius.circular(8)), child: Icon(icon, color: const Color(0xFF6C63FF))),
+        leading: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: const Color(0xFF6C63FF).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)), child: Icon(icon, color: const Color(0xFF6C63FF))),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
         subtitle: Text(subtitle),
         trailing: Row(

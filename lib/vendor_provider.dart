@@ -81,7 +81,7 @@ class VendorProvider with ChangeNotifier {
           .get();
 
       _vendorReviews = snapshot.docs
-          .map((doc) => VendorReviewModel.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+          .map((doc) => VendorReviewModel.fromMap(doc.data(), doc.id))
           .toList();
     } catch (e) {
       _reviewError = 'Failed to load reviews: $e';

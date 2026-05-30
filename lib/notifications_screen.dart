@@ -45,7 +45,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           .get();
 
       _notifications = snapshot.docs
-          .map((doc) => _NotificationItem.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+          .map((doc) => _NotificationItem.fromMap(doc.data(), doc.id))
           .toList();
     } catch (e) {
       _error = 'Failed to load notifications. Please try again.';

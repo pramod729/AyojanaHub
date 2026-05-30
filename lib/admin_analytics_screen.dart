@@ -320,7 +320,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
           children: [
             CircleAvatar(
               radius: 24,
-              backgroundColor: color.withOpacity(0.15),
+              backgroundColor: color.withValues(alpha: 0.15),
               child: Icon(icon, color: color, size: 24),
             ),
             const SizedBox(height: 12),
@@ -357,7 +357,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
           children: [
             CircleAvatar(
               radius: 28,
-              backgroundColor: color.withOpacity(0.15),
+              backgroundColor: color.withValues(alpha: 0.15),
               child: Icon(icon, color: color, size: 28),
             ),
             const SizedBox(width: 16),
@@ -428,8 +428,8 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundColor: AppColors.primary.withOpacity(0.2),
-                  child: Icon(
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.2),
+                  child: const Icon(
                     Icons.person,
                     color: AppColors.primary,
                   ),
@@ -450,7 +450,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: user.role == 'vendor' ? AppColors.success.withOpacity(0.2) : AppColors.primary.withOpacity(0.2),
+                              color: user.role == 'vendor' ? AppColors.success.withValues(alpha: 0.2) : AppColors.primary.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -487,7 +487,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
             const SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.phone, size: 16, color: AppColors.textSecondary),
+                const Icon(Icons.phone, size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 8),
                 Text(
                   user.phone,
@@ -498,7 +498,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
+                const Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 8),
                 Text(
                   'Joined ${DateFormat('MMM dd, yyyy').format(user.createdAt)}',
@@ -554,8 +554,8 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundColor: AppColors.success.withOpacity(0.2),
-                  child: Icon(
+                  backgroundColor: AppColors.success.withValues(alpha: 0.2),
+                  child: const Icon(
                     Icons.storefront,
                     color: AppColors.success,
                   ),
@@ -583,7 +583,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
             const SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.email, size: 16, color: AppColors.textSecondary),
+                const Icon(Icons.email, size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -597,7 +597,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.phone, size: 16, color: AppColors.textSecondary),
+                const Icon(Icons.phone, size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 8),
                 Text(
                   vendor.phone,
@@ -608,7 +608,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
+                const Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 8),
                 Text(
                   vendor.vendorLocation ?? 'Location',
@@ -693,7 +693,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.2),
+                    color: statusColor.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -714,7 +714,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
               children: [
                 Row(
                   children: [
-                    Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
+                    const Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
                     Text(
                       DateFormat('MMM dd, yyyy').format(booking.eventDate),
@@ -724,7 +724,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
                 ),
                 Row(
                   children: [
-                    Icon(Icons.attach_money, size: 16, color: AppColors.success),
+                    const Icon(Icons.attach_money, size: 16, color: AppColors.success),
                     const SizedBox(width: 4),
                     Text(
                       '₹${booking.price.toStringAsFixed(0)}',
@@ -740,7 +740,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.people, size: 16, color: AppColors.textSecondary),
+                const Icon(Icons.people, size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 8),
                 Text(
                   '${booking.guestCount} guests',
@@ -827,7 +827,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(event.status).withOpacity(0.2),
+                    color: _getStatusColor(event.status).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -845,7 +845,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
             const SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.event, size: 16, color: AppColors.textSecondary),
+                const Icon(Icons.event, size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 8),
                 Text(
                   event.eventType,
@@ -856,7 +856,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
+                const Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 8),
                 Text(
                   DateFormat('MMM dd, yyyy').format(event.eventDate),
@@ -867,7 +867,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
+                const Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -881,7 +881,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.people, size: 16, color: AppColors.textSecondary),
+                const Icon(Icons.people, size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 8),
                 Text(
                   '${event.guestCount} guests',
@@ -893,7 +893,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.attach_money, size: 16, color: AppColors.success),
+                  const Icon(Icons.attach_money, size: 16, color: AppColors.success),
                   const SizedBox(width: 4),
                   Text(
                     '₹${event.budget!.toStringAsFixed(0)} budget',
@@ -939,7 +939,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.1),
+        color: AppColors.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Column(
@@ -965,7 +965,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
   Widget _divider() {
     return Divider(
       height: 1,
-      color: AppColors.mediumGray.withOpacity(0.5),
+      color: AppColors.mediumGray.withValues(alpha: 0.5),
     );
   }
 
@@ -1171,7 +1171,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
                           _searchQuery = '';
                         });
                       },
-                      backgroundColor: AppColors.error.withOpacity(0.2),
+                      backgroundColor: AppColors.error.withValues(alpha: 0.2),
                     ),
                   ],
                 ],
@@ -1212,7 +1212,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.history,
                           size: 48,
                           color: AppColors.mediumGray,
@@ -1256,7 +1256,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
       onTap: onTap,
       child: Chip(
         label: Text('$label: $value'),
-        backgroundColor: AppColors.primary.withOpacity(0.1),
+        backgroundColor: AppColors.primary.withValues(alpha: 0.1),
         labelStyle: const TextStyle(color: AppColors.primary),
       ),
     );
@@ -1272,7 +1272,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
@@ -1394,7 +1394,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundColor: activityColor.withOpacity(0.2),
+                  backgroundColor: activityColor.withValues(alpha: 0.2),
                   child: Icon(
                     _getActivityTypeIcon(activity.activityType),
                     color: activityColor,
@@ -1424,7 +1424,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
             const SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.person, size: 16, color: AppColors.textSecondary),
+                const Icon(Icons.person, size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 8),
                 Text(
                   activity.userName,
@@ -1434,7 +1434,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
                 Expanded(
                   child: Row(
                     children: [
-                      Icon(Icons.email, size: 16, color: AppColors.textSecondary),
+                      const Icon(Icons.email, size: 16, color: AppColors.textSecondary),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -1451,7 +1451,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.access_time, size: 16, color: AppColors.textSecondary),
+                const Icon(Icons.access_time, size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 8),
                 Text(
                   DateFormat('MMM dd, yyyy HH:mm').format(activity.timestamp),
@@ -1461,7 +1461,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: activityColor.withOpacity(0.2),
+                    color: activityColor.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(

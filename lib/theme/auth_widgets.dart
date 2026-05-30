@@ -176,7 +176,7 @@ class PremiumButton extends StatelessWidget {
         color: backgroundColor ?? AppColors.gold,
         boxShadow: [
           BoxShadow(
-            color: (backgroundColor ?? AppColors.gold).withOpacity(0.12),
+            color: (backgroundColor ?? AppColors.gold).withValues(alpha: 0.12),
             blurRadius: 8,
             spreadRadius: 0,
             offset: const Offset(0, 2),
@@ -319,7 +319,7 @@ class SuccessState extends StatelessWidget {
           height: 120,
           width: 120,
           decoration: BoxDecoration(
-            color: AppColors.success.withOpacity(0.12),
+            color: AppColors.success.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(AppDimensions.radiusXL),
           ),
           child: const Icon(

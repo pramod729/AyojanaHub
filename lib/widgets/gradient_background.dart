@@ -5,7 +5,7 @@ class GradientBackground extends StatelessWidget {
   final Widget child;
   final EdgeInsets? padding;
 
-  const GradientBackground({Key? key, required this.child, this.padding}) : super(key: key);
+  const GradientBackground({super.key, required this.child, this.padding});
 
   @override
   Widget build(BuildContext context) {

@@ -56,13 +56,13 @@ class HelpSupportScreen extends StatelessWidget {
             const SizedBox(height: 24),
             const Text('Contact Support', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
-            Card(
+            const Card(
               margin: EdgeInsets.zero,
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text('Email', style: TextStyle(fontWeight: FontWeight.w600)),
                     SizedBox(height: 4),
                     Text('support@ayojanahub.com', style: TextStyle(color: Colors.white70)),

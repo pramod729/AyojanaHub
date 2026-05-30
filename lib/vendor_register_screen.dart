@@ -730,7 +730,7 @@ class _VendorRegisterScreenState extends State<VendorRegisterScreen> {
             });
           },
           backgroundColor: Colors.transparent,
-          selectedColor: Theme.of(context).primaryColor.withOpacity(0.12),
+          selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.12),
           side: BorderSide(
             color: _selectedServices.contains(service)
                 ? Theme.of(context).primaryColor

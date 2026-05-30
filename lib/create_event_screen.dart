@@ -159,7 +159,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 ),
                 child: Column(
                   children: [
-                    Icon(Icons.celebration, color: AppColors.gold, size: 48),
+                    const Icon(Icons.celebration, color: AppColors.gold, size: 48),
                     const SizedBox(height: 12),
                     Text(
                       'Plan Your Perfect Event',
@@ -230,7 +230,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.info_outline, color: AppColors.gold, size: 20),
+                        const Icon(Icons.info_outline, color: AppColors.gold, size: 20),
                         const SizedBox(width: 8),
                         Text(
                           'Required Services',
@@ -267,10 +267,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
               const SizedBox(height: 20),
               TextFormField(
                 controller: _eventNameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Event Name',
                   hintText: 'e.g., Sarah & John Wedding',
-                  prefixIcon: const Icon(Icons.event),
+                  prefixIcon: Icon(Icons.event),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -283,9 +283,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
               InkWell(
                 onTap: _selectDate,
                 child: InputDecorator(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Event Date',
-                    prefixIcon: const Icon(Icons.calendar_today),
+                    prefixIcon: Icon(Icons.calendar_today),
                   ),
                   child: Text(
                     DateFormat('EEEE, MMMM dd, yyyy').format(_selectedDate),
@@ -298,10 +298,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _locationController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Location',
                   hintText: 'e.g., Kathmandu, Nepal',
-                  prefixIcon: const Icon(Icons.location_on),
+                  prefixIcon: Icon(Icons.location_on),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -317,9 +317,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     child: TextFormField(
                       controller: _guestCountController,
                       keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Expected Guests',
-                        prefixIcon: const Icon(Icons.people),
+                        prefixIcon: Icon(Icons.people),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -337,9 +337,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     child: TextFormField(
                       controller: _budgetController,
                       keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Budget (NPR)',
-                        prefixIcon: const Icon(Icons.attach_money),
+                        prefixIcon: Icon(Icons.attach_money),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -358,10 +358,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 4,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Description',
                   hintText: 'Tell vendors about your event requirements...',
-                  prefixIcon: const Padding(
+                  prefixIcon: Padding(
                     padding: EdgeInsets.only(bottom: 60),
                     child: Icon(Icons.description),
                   ),

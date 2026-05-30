@@ -12,7 +12,6 @@ class AppTheme {
 
     final base = ThemeData.dark();
     return base.copyWith(
-      useMaterial3: true,
       brightness: Brightness.dark,
       
       // Core Colors
@@ -116,10 +115,10 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: cardBg,
         elevation: 3,
-        shadowColor: Colors.black.withOpacity(0.3),
+        shadowColor: Colors.black.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: borderColor, width: 0.5),
+          side: const BorderSide(color: borderColor, width: 0.5),
         ),
         margin: const EdgeInsets.all(8),
       ),
@@ -145,7 +144,7 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: primaryAccent,
-          side: BorderSide(color: primaryAccent, width: 1.5),
+          side: const BorderSide(color: primaryAccent, width: 1.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -173,19 +172,19 @@ class AppTheme {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: borderColor, width: 1),
+          borderSide: const BorderSide(color: borderColor, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: borderColor, width: 1),
+          borderSide: const BorderSide(color: borderColor, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: primaryAccent, width: 2),
+          borderSide: const BorderSide(color: primaryAccent, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.red, width: 1),
+          borderSide: const BorderSide(color: Colors.red, width: 1),
         ),
       ),
       
@@ -193,7 +192,7 @@ class AppTheme {
       iconTheme: const IconThemeData(color: lightText),
       
       // Floating Action Button Theme
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: primaryAccent,
         foregroundColor: Colors.white,
       ),
@@ -202,8 +201,8 @@ class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: cardBg,
         height: 70,
-        labelTextStyle: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return GoogleFonts.montserrat(
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -216,9 +215,9 @@ class AppTheme {
             color: secondaryText,
           );
         }),
-        iconTheme: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
-            return IconThemeData(
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(
               color: primaryAccent,
               size: 28,
             );
@@ -246,7 +245,6 @@ class AppTheme {
 
     final base = ThemeData.dark();
     return base.copyWith(
-      useMaterial3: true,
       brightness: Brightness.dark,
       
       // Core Colors
@@ -350,10 +348,10 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: cardBg,
         elevation: 3,
-        shadowColor: Colors.black.withOpacity(0.3),
+        shadowColor: Colors.black.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: borderColor, width: 0.5),
+          side: const BorderSide(color: borderColor, width: 0.5),
         ),
         margin: const EdgeInsets.all(8),
       ),
@@ -379,7 +377,7 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: vendorAccent,
-          side: BorderSide(color: vendorAccent, width: 1.5),
+          side: const BorderSide(color: vendorAccent, width: 1.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -407,19 +405,19 @@ class AppTheme {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: borderColor, width: 1),
+          borderSide: const BorderSide(color: borderColor, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: borderColor, width: 1),
+          borderSide: const BorderSide(color: borderColor, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: vendorAccent, width: 2),
+          borderSide: const BorderSide(color: vendorAccent, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.red, width: 1),
+          borderSide: const BorderSide(color: Colors.red, width: 1),
         ),
       ),
       
@@ -427,7 +425,7 @@ class AppTheme {
       iconTheme: const IconThemeData(color: lightText),
       
       // Floating Action Button Theme - Vendor Amber
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: vendorAccent,
         foregroundColor: Colors.black87,
       ),
@@ -436,8 +434,8 @@ class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: cardBg,
         height: 70,
-        labelTextStyle: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return GoogleFonts.montserrat(
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -450,9 +448,9 @@ class AppTheme {
             color: secondaryText,
           );
         }),
-        iconTheme: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
-            return IconThemeData(
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(
               color: vendorAccent,
               size: 28,
             );

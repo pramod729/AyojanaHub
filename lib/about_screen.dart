@@ -7,11 +7,11 @@ class AboutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('About US')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      body: const SingleChildScrollView(
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children: [
             Text('About Ayojana Hub', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             SizedBox(height: 12),
             Text('Ayojana Hub is your all-in-one event planning and vendor management platform. We help customers plan events, connect with trusted vendors, and manage bookings from a single mobile experience.', style: TextStyle(fontSize: 16, color: Colors.white70)),

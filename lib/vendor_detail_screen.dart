@@ -287,7 +287,7 @@ class _VendorDetailScreenState extends State<VendorDetailScreen> {
                     children: widget.vendor.services.map((service) {
                       return Chip(
                         label: Text(service),
-                        backgroundColor: const Color(0xFF6C63FF).withOpacity(0.1),
+                        backgroundColor: const Color(0xFF6C63FF).withValues(alpha: 0.1),
                       );
                     }).toList(),
                   ),

@@ -1,6 +1,5 @@
 import 'package:ayojana_hub/booking_model.dart';
 import 'package:ayojana_hub/booking_provider.dart';
-import 'package:ayojana_hub/auth_provider.dart';
 import 'package:ayojana_hub/vendor_provider.dart';
 import 'package:ayojana_hub/theme/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -113,7 +112,6 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       _isSubmittingReview = true;
     });
 
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final vendorProvider = Provider.of<VendorProvider>(context, listen: false);
     final rating = _selectedRating;
     final comment = _reviewController.text.trim();
