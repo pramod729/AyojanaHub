@@ -37,24 +37,32 @@ class _VendorOpportunitiesScreenState extends State<VendorOpportunitiesScreen> {
     }
 
     try {
+      // The vendor's rejected-event list is a nice-to-have; isolate it so a
+      // failure here (e.g. a missing composite index) can never blank out the
+      // opportunities list below.
       final userId = authProvider.user?.uid;
       if (userId != null) {
-        final rejectedSnapshot = await _firestore
-            .collection('event_responses')
-            .where('vendorId', isEqualTo: userId)
-            .where('status', isEqualTo: 'rejected')
-            .get();
+        try {
+          final rejectedSnapshot = await _firestore
+              .collection('event_responses')
+              .where('vendorId', isEqualTo: userId)
+              .where('status', isEqualTo: 'rejected')
+              .get();
 
-        _rejectedEventIds = rejectedSnapshot.docs
-            .map((doc) => doc.data()['eventId'] as String? ?? '')
-            .where((id) => id.isNotEmpty)
-            .toSet();
+          _rejectedEventIds = rejectedSnapshot.docs
+              .map((doc) => doc.data()['eventId'] as String? ?? '')
+              .where((id) => id.isNotEmpty)
+              .toSet();
+        } catch (_) {
+          _rejectedEventIds = {};
+        }
       }
 
+      // Equality-only query (no orderBy) so it needs NO composite index and can
+      // never fail on an un-deployed index — sort newest-first client-side.
       final snapshot = await _firestore
           .collection('events')
           .where('status', isEqualTo: 'awaiting_proposals')
-          .orderBy('createdAt', descending: true)
           .get();
 
       final vendorCategory = userModel?.vendorCategory;
@@ -65,9 +73,10 @@ class _VendorOpportunitiesScreenState extends State<VendorOpportunitiesScreen> {
               vendorCategory == null ||
               event.requiredServices.isEmpty ||
               event.requiredServices.contains(vendorCategory))
-          .toList();
+          .toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } catch (e) {
-      // Error loading events
+      debugPrint('Failed to load vendor opportunities: $e');
     }
 
     setState(() => _isLoading = false);
