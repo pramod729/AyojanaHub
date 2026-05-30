@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class BookingProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
+
   List<BookingModel> _bookings = [];
   bool _isLoading = false;
   String? _error;
@@ -15,7 +15,7 @@ class BookingProvider with ChangeNotifier {
 
   Future<void> loadMyBookings(String customerId) async {
     if (_isLoading) return;
-    
+
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -40,18 +40,22 @@ class BookingProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadVendorBookings(String vendorId) async {
+  Future<void> loadVendorBookings(String vendorId,
+      {String? fallbackVendorId}) async {
     if (_isLoading) return;
-    
+
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      final snapshot = await _firestore
-          .collection('bookings')
-          .where('vendorId', isEqualTo: vendorId)
-          .get();
+      final query = _firestore.collection('bookings');
+      final snapshot = (fallbackVendorId != null &&
+              fallbackVendorId.isNotEmpty &&
+              fallbackVendorId != vendorId)
+          ? await query
+              .where('vendorId', whereIn: [vendorId, fallbackVendorId]).get()
+          : await query.where('vendorId', isEqualTo: vendorId).get();
 
       final bookingsList = snapshot.docs
           .map((doc) => BookingModel.fromMap(doc.data(), doc.id))
@@ -78,7 +82,10 @@ class BookingProvider with ChangeNotifier {
 
   Future<String?> updateBooking(BookingModel booking) async {
     try {
-      await _firestore.collection('bookings').doc(booking.id).update(booking.toMap());
+      await _firestore
+          .collection('bookings')
+          .doc(booking.id)
+          .update(booking.toMap());
       final bookingIndex = _bookings.indexWhere((b) => b.id == booking.id);
       if (bookingIndex != -1) {
         _bookings[bookingIndex] = booking;
@@ -170,8 +177,7 @@ class BookingProvider with ChangeNotifier {
       final snapshot = await _firestore
           .collection('bookings')
           .where('customerId', isEqualTo: customerId)
-          .where('paymentStatus', whereIn: ['pending', 'failed'])
-          .get();
+          .where('paymentStatus', whereIn: ['pending', 'failed']).get();
 
       return snapshot.docs
           .map((doc) => BookingModel.fromMap(doc.data(), doc.id))

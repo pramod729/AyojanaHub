@@ -87,6 +87,11 @@ class BookingModel {
       return null;
     }
 
+    final rawStatus = map['status'];
+    final normalizedStatus = rawStatus is String && rawStatus.trim().isNotEmpty
+        ? rawStatus.trim().toLowerCase()
+        : 'pending';
+
     return BookingModel(
       id: id,
       eventId: map['eventId'] ?? '',
@@ -102,7 +107,7 @@ class BookingModel {
       price: parseDouble(map['price']),
       bookingDate: parseDateTime(map['bookingDate']),
       eventDate: parseDateTime(map['eventDate']),
-      status: map['status'] ?? 'confirmed',
+      status: normalizedStatus,
       notes: map['notes'],
       createdAt: parseDateTime(map['createdAt']),
       paymentStatus: map['paymentStatus'] ?? 'pending',

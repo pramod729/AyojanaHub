@@ -43,7 +43,14 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Error: ${chatProvider.error}'),
+                  Text(
+                    'Unable to load chats. Please pull down to refresh.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.red.shade700,
+                      fontSize: 16,
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
@@ -61,7 +68,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
 
           if (chatProvider.conversations.isEmpty) {
             return const Center(
-              child: Text('No conversations yet'),
+              child: Text('You have no active chats yet. Contact a vendor to start a conversation.'),
             );
           }
 
@@ -88,7 +95,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                     ? conversation.vendorId
                     : conversation.customerId;
 
-                return ListTile(
+                return InkWell(
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -104,59 +111,95 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                       ),
                     );
                   },
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.blue.shade400,
-                    child: Text(
-                      otherUserName.isNotEmpty
-                          ? otherUserName[0].toUpperCase()
-                          : '?',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  title: Text(otherUserName),
-                  subtitle: Text(
-                    conversation.lastMessage,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        DateFormat('HH:mm').format(conversation.lastMessageTime),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
                         ),
-                      ),
-                      if (conversation.unreadCount > 0)
-                        Container(
-                          margin: const EdgeInsets.only(top: 4),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade400,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 24,
+                          backgroundColor: Colors.blue.shade400,
                           child: Text(
-                            conversation.unreadCount.toString(),
+                            otherUserName.isNotEmpty
+                                ? otherUserName[0].toUpperCase()
+                                : '?',
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                    ],
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                otherUserName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                conversation.lastMessage.isNotEmpty
+                                    ? conversation.lastMessage
+                                    : 'Tap to start chatting',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              DateFormat('HH:mm').format(conversation.lastMessageTime),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            if (conversation.unreadCount > 0)
+                              Container(
+                                margin: const EdgeInsets.only(top: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.shade400,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  conversation.unreadCount.toString(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

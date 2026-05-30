@@ -44,7 +44,7 @@ class NotificationService {
         requestSoundPermission: true,
       );
 
-      final InitializationSettings settings = InitializationSettings(
+      const InitializationSettings settings = InitializationSettings(
         android: androidSettings,
         iOS: iOSSettings,
       );
@@ -145,6 +145,33 @@ class NotificationService {
       }
     } catch (e) {
       debugPrint('Error saving FCM token: $e');
+    }
+  }
+
+  Future<void> createUserNotification({
+    required String userId,
+    required String type,
+    required String title,
+    required String message,
+    Map<String, dynamic>? data,
+  }) async {
+    try {
+      final Map<String, dynamic> notificationData = {
+        'userId': userId,
+        'type': type,
+        'title': title,
+        'message': message,
+        'isRead': false,
+        'createdAt': Timestamp.now(),
+      };
+
+      if (data != null) {
+        notificationData.addAll(data);
+      }
+
+      await FirebaseFirestore.instance.collection('notifications').add(notificationData);
+    } catch (e) {
+      debugPrint('Error creating user notification: $e');
     }
   }
 

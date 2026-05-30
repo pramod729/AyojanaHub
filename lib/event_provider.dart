@@ -77,8 +77,12 @@ class EventProvider with ChangeNotifier {
           .where('role', isEqualTo: 'vendor')
           .get();
 
+      if (usersSnapshot.docs.isEmpty) return;
+
+      final batch = _firestore.batch();
       for (var userDoc in usersSnapshot.docs) {
-        await _firestore.collection('notifications').add({
+        final notificationRef = _firestore.collection('notifications').doc();
+        batch.set(notificationRef, {
           'userId': userDoc.id,
           'type': 'new_event_opportunity',
           'title': 'New Event Opportunity',
@@ -86,12 +90,17 @@ class EventProvider with ChangeNotifier {
           'eventId': eventId,
           'eventName': event.eventName,
           'eventType': event.eventType,
+          'eventDate': event.eventDate,
+          'location': event.location,
+          'requiredServices': event.requiredServices,
           'isRead': false,
           'createdAt': FieldValue.serverTimestamp(),
         });
       }
+
+      await batch.commit();
     } catch (e) {
-      // Error notifying vendors
+      debugPrint('Error notifying vendors about new event: $e');
     }
   }
 

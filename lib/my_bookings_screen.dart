@@ -35,7 +35,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
 
   List<BookingModel> _filterBookings(List<BookingModel> bookings) {
     if (_selectedFilter == 'all') return bookings;
-    return bookings.where((b) => b.status.toLowerCase() == _selectedFilter).toList();
+    return bookings
+        .where((b) => b.status.toLowerCase().trim() == _selectedFilter)
+        .toList();
   }
 
   @override

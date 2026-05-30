@@ -2,6 +2,7 @@
 import 'dart:io';
 
 import 'package:ayojana_hub/activity_service.dart';
+import 'package:ayojana_hub/notification_service.dart';
 import 'package:ayojana_hub/usermodels.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -173,6 +174,14 @@ class AuthProvider with ChangeNotifier {
           description: 'New user registered as ${role.toUpperCase()}',
         );
       }
+
+      // Create a welcome notification for the new user
+      await NotificationService().createUserNotification(
+        userId: credential.user!.uid,
+        type: 'welcome',
+        title: 'Welcome to Ayojana Hub',
+        message: 'Thanks for joining Ayojana Hub! Explore top vendors, create events, and request proposals.',
+      );
 
       _isLoading = false;
       notifyListeners();

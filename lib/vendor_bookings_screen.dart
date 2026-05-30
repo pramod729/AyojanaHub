@@ -27,20 +27,29 @@ class _VendorBookingsScreenState extends State<VendorBookingsScreen> {
     if (!mounted) return;
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final vendorProvider = Provider.of<VendorProvider>(context, listen: false);
-    final bookingProvider = Provider.of<BookingProvider>(context, listen: false);
+    final bookingProvider =
+        Provider.of<BookingProvider>(context, listen: false);
 
     if (authProvider.user != null) {
-      final vendor = await vendorProvider.getVendorByUserId(authProvider.user!.uid);
+      final vendor =
+          await vendorProvider.getVendorByUserId(authProvider.user!.uid);
       if (!mounted) return;
       if (vendor != null) {
-        await bookingProvider.loadVendorBookings(vendor.id);
+        await bookingProvider.loadVendorBookings(
+          vendor.id,
+          fallbackVendorId: authProvider.user!.uid,
+        );
+      } else {
+        await bookingProvider.loadVendorBookings(authProvider.user!.uid);
       }
     }
   }
 
   List<BookingModel> _filterBookings(List<BookingModel> bookings) {
     if (_selectedFilter == 'all') return bookings;
-    return bookings.where((b) => b.status.toLowerCase() == _selectedFilter).toList();
+    return bookings
+        .where((b) => b.status.toLowerCase() == _selectedFilter)
+        .toList();
   }
 
   @override
@@ -53,7 +62,10 @@ class _VendorBookingsScreenState extends State<VendorBookingsScreen> {
         elevation: 0,
         backgroundColor: AppColors.background,
         iconTheme: const IconThemeData(color: AppColors.textLight),
-        titleTextStyle: const TextStyle(color: AppColors.textLight, fontSize: 20, fontWeight: FontWeight.w600),
+        titleTextStyle: const TextStyle(
+            color: AppColors.textLight,
+            fontSize: 20,
+            fontWeight: FontWeight.w600),
       ),
       body: Column(
         children: [
@@ -103,14 +115,16 @@ class _VendorBookingsScreenState extends State<VendorBookingsScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (bookingProvider.error != null && bookingProvider.bookings.isEmpty) {
+                if (bookingProvider.error != null &&
+                    bookingProvider.bookings.isEmpty) {
                   return Center(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.error_outline, size: 48, color: AppColors.error),
+                          Icon(Icons.error_outline,
+                              size: 48, color: AppColors.error),
                           const SizedBox(height: 12),
                           Container(
                             padding: const EdgeInsets.all(16),
@@ -120,7 +134,8 @@ class _VendorBookingsScreenState extends State<VendorBookingsScreen> {
                               border: Border.all(color: AppColors.border),
                             ),
                             child: Text(
-                              bookingProvider.error ?? 'Unable to load your bookings. Please try again.',
+                              bookingProvider.error ??
+                                  'Unable to load your bookings. Please try again.',
                               textAlign: TextAlign.center,
                               style: const TextStyle(
                                 fontSize: 16,
@@ -142,7 +157,8 @@ class _VendorBookingsScreenState extends State<VendorBookingsScreen> {
                   );
                 }
 
-                final filteredBookings = _filterBookings(bookingProvider.bookings);
+                final filteredBookings =
+                    _filterBookings(bookingProvider.bookings);
 
                 if (filteredBookings.isEmpty) {
                   return Center(
@@ -341,7 +357,8 @@ class _VendorBookingCard extends StatelessWidget {
   }
 
   Future<void> _updateStatus(BuildContext context, String status) async {
-    final bookingProvider = Provider.of<BookingProvider>(context, listen: false);
+    final bookingProvider =
+        Provider.of<BookingProvider>(context, listen: false);
     final error = await bookingProvider.updateBookingStatus(booking.id, status);
 
     if (context.mounted) {
@@ -361,10 +378,10 @@ class _VendorBookingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-  color: AppColors.card,
-  margin: const EdgeInsets.only(bottom: 16),
-  elevation: 2,
-  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: AppColors.card,
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () => _showBookingActions(context),
         borderRadius: BorderRadius.circular(12),
@@ -382,9 +399,9 @@ class _VendorBookingCard extends StatelessWidget {
                         Text(
                           booking.customerName,
                           style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -444,7 +461,8 @@ class _VendorBookingCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.attach_money, size: 20, color: AppColors.textSecondary),
+                      Icon(Icons.attach_money,
+                          size: 20, color: AppColors.textSecondary),
                       const SizedBox(width: 8),
                       Text(
                         'NPR ${booking.price.toStringAsFixed(0)}',

@@ -1,5 +1,5 @@
 import 'package:ayojana_hub/chat_provider.dart';
-// message_model is not used directly here
+import 'package:ayojana_hub/message_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -106,93 +106,111 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: Consumer<ChatProvider>(
               builder: (context, chatProvider, _) {
-                if (chatProvider.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+                return StreamBuilder<List<MessageModel>>(
+                  stream: chatProvider.getMessagesStream(widget.conversationId),
+                  builder: (context, snapshot) {
+                    if (chatProvider.isLoading && !snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                if (chatProvider.error != null) {
-                  return Center(
-                    child: Text('Error: ${chatProvider.error}'),
-                  );
-                }
-
-                if (chatProvider.messages.isEmpty) {
-                  return const Center(
-                    child: Text('No messages yet. Start a conversation!'),
-                  );
-                }
-
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _scrollToBottom();
-                });
-
-                return ListView.builder(
-                  controller: _scrollController,
-                  itemCount: chatProvider.messages.length,
-                  itemBuilder: (context, index) {
-                    final message = chatProvider.messages[index];
-                    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-                    final isCurrentUser = message.senderId == currentUserId;
-
-                    return Align(
-                      alignment: isCurrentUser
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 4,
+                    if (snapshot.hasError || chatProvider.error != null) {
+                      return Center(
+                        child: Text(
+                          'Error loading chat. Please try again.',
+                          style: TextStyle(color: Colors.red.shade700),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.75,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isCurrentUser
-                              ? Colors.blue.shade400
-                              : Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              message.message,
-                              style: TextStyle(
-                                color: isCurrentUser
-                                    ? Colors.white
-                                    : Colors.black87,
-                                fontSize: 14,
+                      );
+                    }
+
+                    final messages = snapshot.data ?? chatProvider.messages;
+
+                    if (messages.isEmpty) {
+                      return const Center(
+                        child: Text('No messages yet. Start a conversation!'),
+                      );
+                    }
+
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _scrollToBottom();
+                    });
+
+                    return ListView.builder(
+                      controller: _scrollController,
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        final message = messages[index];
+                        final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+                        final isCurrentUser = message.senderId == currentUserId;
+
+                        return Align(
+                          alignment: isCurrentUser
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width * 0.78,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isCurrentUser
+                                  ? Colors.blue.shade500
+                                  : Colors.grey.shade200,
+                              borderRadius: BorderRadius.only(
+                                topLeft: const Radius.circular(16),
+                                topRight: const Radius.circular(16),
+                                bottomLeft: Radius.circular(isCurrentUser ? 16 : 4),
+                                bottomRight: Radius.circular(isCurrentUser ? 4 : 16),
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              DateFormat('HH:mm').format(message.sentAt),
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: isCurrentUser
-                                    ? Colors.white70
-                                    : Colors.black54,
-                              ),
-                            ),
-                            if (isCurrentUser) ...[
-                              const SizedBox(height: 2),
-                              Text(
-                                message.isRead ? '✓✓' : '✓',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: message.isRead
-                                      ? Colors.lightBlue
-                                      : Colors.white70,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  message.message,
+                                  style: TextStyle(
+                                    color: isCurrentUser ? Colors.white : Colors.black87,
+                                    fontSize: 15,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
+                                const SizedBox(height: 6),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      DateFormat('HH:mm').format(message.sentAt),
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: isCurrentUser
+                                            ? Colors.white70
+                                            : Colors.black54,
+                                      ),
+                                    ),
+                                    if (isCurrentUser) ...[
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        message.isRead ? '✓✓' : '✓',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: message.isRead
+                                              ? Colors.lightBlue
+                                              : Colors.black45,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     );
                   },
                 );

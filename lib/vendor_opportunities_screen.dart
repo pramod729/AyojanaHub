@@ -17,6 +17,7 @@ class _VendorOpportunitiesScreenState extends State<VendorOpportunitiesScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<EventModel> _matchingEvents = [];
   bool _isLoading = true;
+  Set<String> _rejectedEventIds = {};
 
   @override
   void initState() {
@@ -36,6 +37,20 @@ class _VendorOpportunitiesScreenState extends State<VendorOpportunitiesScreen> {
     }
 
     try {
+      final userId = authProvider.user?.uid;
+      if (userId != null) {
+        final rejectedSnapshot = await _firestore
+            .collection('event_responses')
+            .where('vendorId', isEqualTo: userId)
+            .where('status', isEqualTo: 'rejected')
+            .get();
+
+        _rejectedEventIds = rejectedSnapshot.docs
+            .map((doc) => doc.data()['eventId'] as String? ?? '')
+            .where((id) => id.isNotEmpty)
+            .toSet();
+      }
+
       final snapshot = await _firestore
           .collection('events')
           .where('status', isEqualTo: 'awaiting_proposals')
@@ -44,6 +59,7 @@ class _VendorOpportunitiesScreenState extends State<VendorOpportunitiesScreen> {
 
       _matchingEvents = snapshot.docs
           .map((doc) => EventModel.fromMap(doc.data(), doc.id))
+          .where((event) => !_rejectedEventIds.contains(event.id))
           .toList();
     } catch (e) {
       // Error loading events
@@ -107,6 +123,7 @@ class _VendorOpportunitiesScreenState extends State<VendorOpportunitiesScreen> {
                       return _EventOpportunityCard(
                         event: event,
                         onTap: () => _navigateToSubmitProposal(event),
+                        onReject: () => _rejectEvent(event),
                       );
                     },
                   ),
@@ -141,15 +158,52 @@ class _VendorOpportunitiesScreenState extends State<VendorOpportunitiesScreen> {
       arguments: event,
     );
   }
+
+  Future<void> _rejectEvent(EventModel event) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final userId = authProvider.user?.uid;
+    if (userId == null) return;
+
+    try {
+      await _firestore.collection('event_responses').add({
+        'eventId': event.id,
+        'vendorId': userId,
+        'status': 'rejected',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      setState(() {
+        _matchingEvents.removeWhere((e) => e.id == event.id);
+        _rejectedEventIds.add(event.id);
+      });
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Event rejected. It will no longer appear in opportunities.'),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Unable to reject the event. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 }
 
 class _EventOpportunityCard extends StatelessWidget {
   final EventModel event;
   final VoidCallback onTap;
+  final VoidCallback onReject;
 
   const _EventOpportunityCard({
     required this.event,
     required this.onTap,
+    required this.onReject,
   });
 
   @override
@@ -271,6 +325,19 @@ class _EventOpportunityCard extends StatelessWidget {
                         elevation: 0,
                       ),
                     ),
+                  ),
+                  const SizedBox(width: 12),
+                  OutlinedButton(
+                    onPressed: onReject,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFFEF4444),
+                      side: const BorderSide(color: Color(0xFFEF4444)),
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text('Reject'),
                   ),
                 ],
               ),

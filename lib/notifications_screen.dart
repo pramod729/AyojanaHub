@@ -174,6 +174,8 @@ class _NotificationItem {
         return Icons.book_online;
       case 'proposal_rejected':
         return Icons.cancel_outlined;
+      case 'welcome':
+        return Icons.celebration;
       default:
         return Icons.notifications_outlined;
     }

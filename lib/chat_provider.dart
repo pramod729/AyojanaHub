@@ -29,7 +29,6 @@ class ChatProvider with ChangeNotifier {
       final snapshot = await _firestore
           .collection('conversations')
           .where('customerId', isEqualTo: userId)
-          .orderBy('lastMessageTime', descending: true)
           .get();
 
       final convList = snapshot.docs
@@ -39,7 +38,6 @@ class ChatProvider with ChangeNotifier {
       final snapshot2 = await _firestore
           .collection('conversations')
           .where('vendorId', isEqualTo: userId)
-          .orderBy('lastMessageTime', descending: true)
           .get();
 
       final convList2 = snapshot2.docs
@@ -51,8 +49,8 @@ class ChatProvider with ChangeNotifier {
 
       _conversations = convList;
     } catch (e) {
-      _error = 'Failed to load conversations: $e';
-      debugPrint(_error);
+      _error = 'Failed to load conversations. Please try again.';
+      debugPrint('ChatProvider.loadConversations error: $e');
     }
 
     _isLoading = false;
