@@ -189,8 +189,11 @@ class EventDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 28),
-                  if (event.proposalCount > 0)
-                    SizedBox(
+                  // Always offer "View Proposals" — proposalCount can lag (a
+                  // vendor cannot update the owner's event), so the proposals
+                  // screen itself is the source of truth and shows an empty
+                  // state when there are none.
+                  SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () {

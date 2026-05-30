@@ -77,10 +77,15 @@ class ProposalProvider with ChangeNotifier {
   Future<String?> submitProposal(ProposalModel proposal) async {
     try {
       final proposalRef = await _firestore.collection('proposals').add(proposal.toMap());
-      
-      await _firestore.collection('events').doc(proposal.eventId).update({
-        'proposalCount': FieldValue.increment(1),
-      });
+
+      // Best-effort: only the event owner may update the event, so a vendor's
+      // proposalCount increment is rejected by the security rules — don't let
+      // that abort the submit or skip the customer notification below.
+      try {
+        await _firestore.collection('events').doc(proposal.eventId).update({
+          'proposalCount': FieldValue.increment(1),
+        });
+      } catch (_) {}
 
       await _firestore.collection('notifications').add({
         'userId': (await _firestore.collection('events').doc(proposal.eventId).get()).data()?['userId'],
