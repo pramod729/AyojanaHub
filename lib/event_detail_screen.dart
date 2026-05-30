@@ -216,8 +216,9 @@ class EventDetailScreen extends StatelessWidget {
                           elevation: 2,
                         ),
                       ),
-                    )
-                  else
+                    ),
+                  if (event.proposalCount == 0) ...[
+                    const SizedBox(height: 12),
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
@@ -232,7 +233,7 @@ class EventDetailScreen extends StatelessWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Waiting for vendor proposals...',
+                              'Tap "View Proposals" to see vendor responses.',
                               style: TextStyle(
                                 color: Colors.blue.shade700,
                                 fontWeight: FontWeight.w600,
@@ -242,6 +243,7 @@ class EventDetailScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+                  ],
                 ],
               ),
             ),
