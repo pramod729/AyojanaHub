@@ -55,15 +55,16 @@ class ProposalProvider with ChangeNotifier {
       // (request.auth.uid == resource.data.vendorId). Querying by anything else
       // (e.g. the vendors-collection document id) is rejected with
       // permission-denied, so we query by the auth uid only.
+      // Equality-only query (sort client-side) so it needs no composite index.
       final snapshot = await _firestore
           .collection('proposals')
           .where('vendorId', isEqualTo: vendorUserId)
-          .orderBy('createdAt', descending: true)
           .get();
 
       _proposals = snapshot.docs
           .map((doc) => ProposalModel.fromMap(doc.data(), doc.id))
-          .toList();
+          .toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } catch (e) {
       _error = 'Failed to load proposals: $e';
       _proposals = [];

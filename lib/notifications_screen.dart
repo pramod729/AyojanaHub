@@ -38,13 +38,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
 
     try {
+      // Equality-only query (sort client-side) so it needs no composite index.
       final snapshot = await FirebaseFirestore.instance
           .collection('notifications')
           .where('userId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
           .get();
 
-      _notifications = snapshot.docs
+      final docs = snapshot.docs.toList()
+        ..sort((a, b) {
+          final ta = a.data()['createdAt'];
+          final tb = b.data()['createdAt'];
+          if (ta is Timestamp && tb is Timestamp) return tb.compareTo(ta);
+          return 0;
+        });
+      _notifications = docs
           .map((doc) => _NotificationItem.fromMap(doc.data(), doc.id))
           .toList();
     } catch (e) {

@@ -41,15 +41,16 @@ class EventProvider with ChangeNotifier {
     notifyListeners();
 
     try {
+      // Equality-only query (sort client-side) so it needs no composite index.
       final snapshot = await _firestore
           .collection('events')
           .where('userId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
           .get();
 
       _events = snapshot.docs
           .map((doc) => EventModel.fromMap(doc.data(), doc.id))
-          .toList();
+          .toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } catch (e) {
       _error = e.toString();
     }

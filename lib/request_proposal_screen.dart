@@ -53,16 +53,17 @@ class _RequestProposalScreenState extends State<RequestProposalScreen> {
     }
 
     try {
+      // Equality-only query (sort client-side) so it needs no composite index.
       final querySnapshot = await _firestore
           .collection('events')
           .where('userId', isEqualTo: currentUser.uid)
-          .orderBy('createdAt', descending: true)
           .get();
 
       setState(() {
         _events = querySnapshot.docs
             .map((doc) => EventModel.fromMap(doc.data(), doc.id))
-            .toList();
+            .toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
         if (_events.isNotEmpty) {
           _selectedEvent = _events.first;
         }
